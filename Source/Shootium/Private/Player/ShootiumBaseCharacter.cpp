@@ -3,6 +3,7 @@
 
 #include "Player/ShootiumBaseCharacter.h"
 #include "Camera/CameraComponent.h"
+#include "Components/InputComponent.h"
 
 // Sets default values
 AShootiumBaseCharacter::AShootiumBaseCharacter()
@@ -34,5 +35,17 @@ void AShootiumBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	PlayerInputComponent->BindAxis("MoveForward", this, &AShootiumBaseCharacter::MoveForward);
+    PlayerInputComponent->BindAxis("MoveRight", this, &AShootiumBaseCharacter::MoveRight);
+}
+
+void AShootiumBaseCharacter::MoveForward(float Amount) 
+{
+    AddMovementInput(GetActorForwardVector(), Amount);
+}
+
+void AShootiumBaseCharacter::MoveRight(float Amount) 
+{
+    AddMovementInput(GetActorRightVector(), Amount);
 }
 
