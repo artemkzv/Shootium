@@ -2,4 +2,11 @@
 
 
 #include "ShootiumGameModeBase.h"
+#include "Player/ShootiumBaseCharacter.h"
+#include "Player/ShootiumPlayerController.h"
 
+AShootiumGameModeBase::AShootiumGameModeBase()
+{
+    DefaultPawnClass = AShootiumBaseCharacter::StaticClass();
+    PlayerControllerClass = AShootiumPlayerController::StaticClass();
+}

@@ -14,4 +14,6 @@ class SHOOTIUM_API AShootiumGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+	public:
+    AShootiumGameModeBase();
 };
