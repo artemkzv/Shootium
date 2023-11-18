@@ -7,6 +7,7 @@
 #include "ShootiumBaseCharacter.generated.h"
 
 class UCameraComponent;
+class USpringArmComponent;
 
 UCLASS()
 class SHOOTIUM_API AShootiumBaseCharacter : public ACharacter
@@ -17,6 +18,9 @@ public:
 	AShootiumBaseCharacter();
 
 protected:
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+    USpringArmComponent* SpringArmComponent;
+
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     UCameraComponent* CameraComponent;
 
@@ -31,4 +35,5 @@ public:
 private:
     void MoveForward(float Amount);
     void MoveRight(float Amount);
+
 };
