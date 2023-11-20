@@ -44,6 +44,7 @@ void AShootiumBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
     PlayerInputComponent->BindAxis("MoveRight", this, &AShootiumBaseCharacter::MoveRight);
     PlayerInputComponent->BindAxis("LookUp", this, &AShootiumBaseCharacter::AddControllerPitchInput);
     PlayerInputComponent->BindAxis("TurnAround", this, &AShootiumBaseCharacter::AddControllerYawInput);
+    PlayerInputComponent->BindAction("Jump",IE_Pressed, this, &AShootiumBaseCharacter::Jump);
 }
 
 void AShootiumBaseCharacter::MoveForward(float Amount) 
