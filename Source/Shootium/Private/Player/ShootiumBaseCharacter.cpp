@@ -6,9 +6,12 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/ShootCharacterMovementComponent.h"
+#include "Components/ShootiumHealthComponent.h"
+#include "Components/TextRenderComponent.h"
 
 // Sets default values
-AShootiumBaseCharacter::AShootiumBaseCharacter(const FObjectInitializer& ObjInit) : Super(ObjInit.SetDefaultSubobjectClass<UShootCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
+AShootiumBaseCharacter::AShootiumBaseCharacter(const FObjectInitializer& ObjInit)
+    : Super(ObjInit.SetDefaultSubobjectClass<UShootCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -20,12 +23,19 @@ AShootiumBaseCharacter::AShootiumBaseCharacter(const FObjectInitializer& ObjInit
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
     CameraComponent->SetupAttachment(SpringArmComponent);
 
+    HealthComponent = CreateDefaultSubobject<UShootiumHealthComponent>("HealthComponent");
+
+    HealthTextComponent = CreateDefaultSubobject<UTextRenderComponent>("HealthTextComponent");
+    HealthTextComponent->SetupAttachment(GetRootComponent());
 }
 
 // Called when the game starts or when spawned
 void AShootiumBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+    check(HealthComponent);
+    check(HealthTextComponent);
 	
 }
 
@@ -33,6 +43,9 @@ void AShootiumBaseCharacter::BeginPlay()
 void AShootiumBaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+    const auto Health = HealthComponent->GetHealth();
+    HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), Health)));
 
 }
 

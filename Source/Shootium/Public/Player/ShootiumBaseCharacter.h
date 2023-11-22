@@ -8,14 +8,16 @@
 
 class UCameraComponent;
 class USpringArmComponent;
+class UShootiumHealthComponent;
+class UTextRenderComponent;
 
 UCLASS()
 class SHOOTIUM_API AShootiumBaseCharacter : public ACharacter
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	AShootiumBaseCharacter(const FObjectInitializer& ObjInit);
+    AShootiumBaseCharacter(const FObjectInitializer& ObjInit);
 
 protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
@@ -23,6 +25,12 @@ protected:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     UCameraComponent* CameraComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+    UShootiumHealthComponent* HealthComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+    UTextRenderComponent* HealthTextComponent;
 
 	virtual void BeginPlay() override;
 
