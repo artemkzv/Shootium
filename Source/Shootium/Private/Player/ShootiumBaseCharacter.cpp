@@ -9,6 +9,8 @@
 #include "Components/ShootiumHealthComponent.h"
 #include "Components/TextRenderComponent.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogBaseCharacter, All, All);
+
 // Sets default values
 AShootiumBaseCharacter::AShootiumBaseCharacter(const FObjectInitializer& ObjInit)
     : Super(ObjInit.SetDefaultSubobjectClass<UShootCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))

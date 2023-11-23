@@ -12,7 +12,7 @@ public class Shootium : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
-		PublicIncludePaths.AddRange(new string[] { "Shootium/Public/Player", "Shootium/Public/Components" });
+		PublicIncludePaths.AddRange(new string[] { "Shootium/Public/Player", "Shootium/Public/Components", "Shootium/Public/Dev" });
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
