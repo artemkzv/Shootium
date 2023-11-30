@@ -18,6 +18,7 @@ void UShootiumHealthComponent::BeginPlay()
 	Super::BeginPlay();
 
 	Health = MaxHealth;
+    OnHealthChanged.Broadcast(Health);
 
 	AActor* ComponentOwner = GetOwner();
 	if (ComponentOwner)
@@ -29,9 +30,14 @@ void UShootiumHealthComponent::BeginPlay()
 void UShootiumHealthComponent::OnTakeAnyDamage(
     AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-    Health -= Damage;
+	if (Damage <= 0.0f || IsDead()) return;
+    Health = FMath::Clamp(Health - Damage, 0.0f, MaxHealth);
+    OnHealthChanged.Broadcast(Health);
 
-	UE_LOG(LogHealthComponent, Display, TEXT("Damage: %f"), Damage);
+	if (IsDead())
+	{
+        OnDeath.Broadcast();
+	}
 }
 
 
