@@ -8,6 +8,7 @@
 #include "Components/ShootCharacterMovementComponent.h"
 #include "Components/ShootiumHealthComponent.h"
 #include "Components/TextRenderComponent.h"
+#include "GameFramework/Controller.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogBaseCharacter, All, All);
 
@@ -116,6 +117,11 @@ void AShootiumBaseCharacter::OnDeath()
     GetCharacterMovement()->DisableMovement();
 
     SetLifeSpan(5.0f);
+
+    if (Controller)
+    {
+        Controller->ChangeState(NAME_Spectating);
+    }
 }
 
 void AShootiumBaseCharacter::OnHealthChanged(float Health) 
