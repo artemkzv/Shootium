@@ -9,6 +9,7 @@
 #include "Components/ShootiumHealthComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "GameFramework/Controller.h"
+#include "Weapon/ShootiumBaseWeapon.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogBaseCharacter, All, All);
 
@@ -46,6 +47,8 @@ void AShootiumBaseCharacter::BeginPlay()
     HealthComponent->OnHealthChanged.AddUObject(this, &AShootiumBaseCharacter::OnHealthChanged);
 
     LandedDelegate.AddDynamic(this, &AShootiumBaseCharacter::OnGroundLanded);
+
+    SpawnWeapon();
 	
 }
 
@@ -146,6 +149,18 @@ void AShootiumBaseCharacter::OnGroundLanded(const FHitResult& Hit)
         TakeDamage(FinalDamage, FDamageEvent{}, nullptr, nullptr);
     }
     
+}
+
+void AShootiumBaseCharacter::SpawnWeapon() 
+{
+    if (!GetWorld()) return;
+
+    const auto Weapon = GetWorld()->SpawnActor<AShootiumBaseWeapon>(WeaponClass);
+    if (Weapon)
+    {
+        FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
+        Weapon->AttachToComponent(GetMesh(), AttachmentRules, "RifleHandSocket");
+    }
 }
 
 

@@ -10,6 +10,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class UShootiumHealthComponent;
 class UTextRenderComponent;
+class AShootiumBaseWeapon;
 
 UCLASS()
 class SHOOTIUM_API AShootiumBaseCharacter : public ACharacter
@@ -47,6 +48,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category = "Damage", meta = (EditCondition = "ApplyLandedDamage"))
     FVector2D LandedDamage = FVector2D(10.0f, 100.0f);
 
+    UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+    TSubclassOf<AShootiumBaseWeapon> WeaponClass;
+
 	virtual void BeginPlay() override;
 
 public:	
@@ -75,4 +79,6 @@ private:
 
     UFUNCTION()
     void OnGroundLanded(const FHitResult& Hit);
+
+    void SpawnWeapon();
 };
