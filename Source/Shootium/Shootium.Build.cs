@@ -17,7 +17,9 @@ public class Shootium : ModuleRules
 			"Shootium/Public/Player", 
 			"Shootium/Public/Components", 
 			"Shootium/Public/Dev",
-			"Shootium/Public/Weapon" });
+			"Shootium/Public/Weapon",
+			"Shootium/Public/UI"
+		});
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
