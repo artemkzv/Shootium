@@ -16,6 +16,8 @@ class SHOOTIUM_API AShootiumBaseWeapon : public AActor
 public:	
 	AShootiumBaseWeapon();
 
+	virtual void Fire();
+
 protected:
     UPROPERTY(VisibleAnyWhere, BlueprintReadWrite, Category = "Components")
     USkeletalMeshComponent* WeaponMesh;

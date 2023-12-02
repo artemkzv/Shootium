@@ -4,6 +4,8 @@
 #include "Weapon/ShootiumBaseWeapon.h"
 #include "Components/SkeletalMeshComponent.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogBaseWeapon, All, All);
+
 AShootiumBaseWeapon::AShootiumBaseWeapon()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -19,4 +21,7 @@ void AShootiumBaseWeapon::BeginPlay()
 	
 }
 
-
+void AShootiumBaseWeapon::Fire() 
+{
+    UE_LOG(LogBaseWeapon, Display, TEXT("Fire"));
+}

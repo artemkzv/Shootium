@@ -8,8 +8,9 @@
 #include "Components/ShootCharacterMovementComponent.h"
 #include "Components/ShootiumHealthComponent.h"
 #include "Components/TextRenderComponent.h"
+#include "Components/ShootiumWeaponComponent.h"
 #include "GameFramework/Controller.h"
-#include "Weapon/ShootiumBaseWeapon.h"
+
 
 DEFINE_LOG_CATEGORY_STATIC(LogBaseCharacter, All, All);
 
@@ -33,6 +34,8 @@ AShootiumBaseCharacter::AShootiumBaseCharacter(const FObjectInitializer& ObjInit
     HealthTextComponent = CreateDefaultSubobject<UTextRenderComponent>("HealthTextComponent");
     HealthTextComponent->SetupAttachment(GetRootComponent());
     HealthTextComponent->SetOwnerNoSee(true);
+
+    WeaponComponent = CreateDefaultSubobject<UShootiumWeaponComponent>("WeaponComponent");
 }
 
 // Called when the game starts or when spawned
@@ -49,8 +52,6 @@ void AShootiumBaseCharacter::BeginPlay()
     HealthComponent->OnHealthChanged.AddUObject(this, &AShootiumBaseCharacter::OnHealthChanged);
 
     LandedDelegate.AddDynamic(this, &AShootiumBaseCharacter::OnGroundLanded);
-
-    SpawnWeapon();
 	
 }
 
@@ -68,6 +69,7 @@ void AShootiumBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
     check(PlayerInputComponent);
+    check(WeaponComponent);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AShootiumBaseCharacter::MoveForward);
     PlayerInputComponent->BindAxis("MoveRight", this, &AShootiumBaseCharacter::MoveRight);
@@ -76,6 +78,7 @@ void AShootiumBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
     PlayerInputComponent->BindAction("Jump",IE_Pressed, this, &AShootiumBaseCharacter::Jump);
     PlayerInputComponent->BindAction("Run", IE_Pressed, this, &AShootiumBaseCharacter::OnStartRunning);
     PlayerInputComponent->BindAction("Run", IE_Released, this, &AShootiumBaseCharacter::OnStopRunning);
+    PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &UShootiumWeaponComponent::Fire);
 }
 
 void AShootiumBaseCharacter::MoveForward(float Amount) 
@@ -153,17 +156,7 @@ void AShootiumBaseCharacter::OnGroundLanded(const FHitResult& Hit)
     
 }
 
-void AShootiumBaseCharacter::SpawnWeapon() 
-{
-    if (!GetWorld()) return;
 
-    const auto Weapon = GetWorld()->SpawnActor<AShootiumBaseWeapon>(WeaponClass);
-    if (Weapon)
-    {
-        FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
-        Weapon->AttachToComponent(GetMesh(), AttachmentRules, "RifleHandSocket");
-    }
-}
 
 
 
