@@ -44,6 +44,8 @@ void AShootiumBaseCharacter::BeginPlay()
     OnHealthChanged(HealthComponent->GetHealth());
     HealthComponent->OnDeath.AddUObject(this, &AShootiumBaseCharacter::OnDeath);
     HealthComponent->OnHealthChanged.AddUObject(this, &AShootiumBaseCharacter::OnHealthChanged);
+
+    LandedDelegate.AddDynamic(this, &AShootiumBaseCharacter::OnGroundLanded);
 	
 }
 
@@ -60,6 +62,7 @@ void AShootiumBaseCharacter::Tick(float DeltaTime)
 void AShootiumBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+    check(PlayerInputComponent);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AShootiumBaseCharacter::MoveForward);
     PlayerInputComponent->BindAxis("MoveRight", this, &AShootiumBaseCharacter::MoveRight);
@@ -116,7 +119,7 @@ void AShootiumBaseCharacter::OnDeath()
 
     GetCharacterMovement()->DisableMovement();
 
-    SetLifeSpan(5.0f);
+    SetLifeSpan(LifeSpanOnDeath);
 
     if (Controller)
     {
@@ -127,6 +130,22 @@ void AShootiumBaseCharacter::OnDeath()
 void AShootiumBaseCharacter::OnHealthChanged(float Health) 
 {
     HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), Health)));
+}
+
+void AShootiumBaseCharacter::OnGroundLanded(const FHitResult& Hit) 
+{
+    if (ApplyLandedDamage)
+    {
+        const auto FallVelocityZ = -GetVelocity().Z;
+        UE_LOG(LogBaseCharacter, Display, TEXT("On landed: %f"), FallVelocityZ);
+
+        if (FallVelocityZ < LandedDamageVelocity.X) return;
+
+        const auto FinalDamage = FMath::GetMappedRangeValueClamped(LandedDamageVelocity, LandedDamage, FallVelocityZ);
+        UE_LOG(LogBaseCharacter, Display, TEXT("FinalDamage: %f"), FinalDamage);
+        TakeDamage(FinalDamage, FDamageEvent{}, nullptr, nullptr);
+    }
+    
 }
 
 

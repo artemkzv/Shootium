@@ -6,8 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "ShootiumHealthComponent.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnDeath)
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, float)
+DECLARE_MULTICAST_DELEGATE(FOnDeathSignature);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SHOOTIUM_API UShootiumHealthComponent : public UActorComponent
@@ -17,13 +17,14 @@ class SHOOTIUM_API UShootiumHealthComponent : public UActorComponent
 public:	
 	UShootiumHealthComponent();
 
-	float GetHealth() const { return Health; }
+    FOnDeathSignature OnDeath;
+    FOnHealthChangedSignature OnHealthChanged;
 
-	UFUNCTION(BlueprintCallable)
+    UFUNCTION(BlueprintCallable)
     bool IsDead() const { return FMath::IsNearlyZero(Health); }
 
-	FOnDeath OnDeath;
-    FOnHealthChanged OnHealthChanged;
+	float GetHealth() const { return Health; }
+
 
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", meta = (ClampMin = "10", ClampMax = "1000"))
