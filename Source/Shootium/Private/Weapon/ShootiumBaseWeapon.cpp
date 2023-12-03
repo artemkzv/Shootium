@@ -28,9 +28,16 @@ void AShootiumBaseWeapon::BeginPlay()
 }
 
 
-void AShootiumBaseWeapon::Fire() 
+void AShootiumBaseWeapon::StartFire() 
 {
 	MakeShot();
+    GetWorldTimerManager().SetTimer(ShotTimerHandle, this, &AShootiumBaseWeapon::MakeShot, TimeBetweenShot, true);
+    UE_LOG(LogBaseWeapon, Display, TEXT("Shot"));
+}
+
+void AShootiumBaseWeapon::StopFire()
+{
+    GetWorldTimerManager().ClearTimer(ShotTimerHandle);
 }
 
 void AShootiumBaseWeapon::MakeShot() 
@@ -89,7 +96,8 @@ bool AShootiumBaseWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) c
     if (!GetPlayerViewPoint(ViewLocation, ViewRotation)) return false;
 
     TraceStart = ViewLocation;
-    const FVector ShootDirection = ViewRotation.Vector();
+    const auto HalfRad = FMath::DegreesToRadians(BulletSpread);
+    const FVector ShootDirection = FMath::VRandCone(ViewRotation.Vector(), HalfRad);
     TraceEnd = TraceStart + ShootDirection * TraceMaxDistance;
     return true;
 }

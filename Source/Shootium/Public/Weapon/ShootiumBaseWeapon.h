@@ -16,7 +16,8 @@ class SHOOTIUM_API AShootiumBaseWeapon : public AActor
 public:	
 	AShootiumBaseWeapon();
 
-	virtual void Fire();
+	virtual void StartFire();
+    virtual void StopFire();
 
 protected:
     UPROPERTY(VisibleAnyWhere, BlueprintReadWrite, Category = "Components")
@@ -31,6 +32,12 @@ protected:
 	UPROPERTY(VisibleAnyWhere, BlueprintReadWrite)
 	float DamageAmount = 10.0f;
 
+	UPROPERTY(VisibleAnyWhere, BlueprintReadWrite)
+    float TimeBetweenShot = 0.1f;
+
+	UPROPERTY(VisibleAnyWhere, BlueprintReadWrite)
+    float BulletSpread = 1.5f;
+
 	virtual void BeginPlay() override;
 
 	void MakeShot();
@@ -41,4 +48,8 @@ protected:
     bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const;
     void MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd);
     void MakeDamage(const FHitResult& HitResult);
+
+private:
+    FTimerHandle ShotTimerHandle;
+
 };

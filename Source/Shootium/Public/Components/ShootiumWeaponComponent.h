@@ -16,7 +16,8 @@ class SHOOTIUM_API UShootiumWeaponComponent : public UActorComponent
 public:	
 	UShootiumWeaponComponent();
 
-	void Fire();
+	void StartFire();
+    void StopFire();
 
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
