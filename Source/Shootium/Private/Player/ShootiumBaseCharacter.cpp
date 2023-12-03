@@ -9,6 +9,7 @@
 #include "Components/ShootiumHealthComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Components/ShootiumWeaponComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/Controller.h"
 
 
@@ -133,6 +134,7 @@ void AShootiumBaseCharacter::OnDeath()
     {
         Controller->ChangeState(NAME_Spectating);
     }
+    GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 }
 
 void AShootiumBaseCharacter::OnHealthChanged(float Health) 
