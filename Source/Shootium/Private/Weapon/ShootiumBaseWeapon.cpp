@@ -89,10 +89,4 @@ void AShootiumBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceSta
     GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionParams);
 }
 
-void AShootiumBaseWeapon::MakeDamage(const FHitResult& HitResult) 
-{
-    const auto DamagedActor = HitResult.GetActor();
-    if (!DamagedActor) return;
 
-    DamagedActor->TakeDamage(DamageAmount, FDamageEvent(), GetPlayerController(), this);
-}
