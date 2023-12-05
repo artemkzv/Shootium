@@ -18,19 +18,31 @@ public:
 
 	void StartFire();
     void StopFire();
+    void NextWeapon();
 
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-    TSubclassOf<AShootiumBaseWeapon> WeaponClass;
+    TArray<TSubclassOf<AShootiumBaseWeapon>> WeaponClasses;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	FName WeaponAttachPointName = "RifleHandSocket";
+	FName WeaponEquipSocketName = "RifleHandSocket";
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+    FName WeaponHolsterSocketName = "LauncherHolsterSocket";
 
 	virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override; 
 
 private:
     UPROPERTY()
     AShootiumBaseWeapon* CurrentWeapon = nullptr;
 
-    void SpawnWeapon();
+	UPROPERTY()
+    TArray<AShootiumBaseWeapon*> Weapons;
+
+	int32 CurrentWeaponIndex = 0;
+
+    void SpawnWeapons();
+    void AttachWeaponToSocket(AShootiumBaseWeapon* Weapon, USceneComponent* SceneComponent, const FName& SocketName);
+    void EquipWeapon(int32 WeaponIndex);
 };

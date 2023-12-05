@@ -27,7 +27,7 @@ protected:
     FName MuzzleSocketName = "MuzzleSocket";
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-    float TraceMaxDistance = 1500.0f;
+    float TraceMaxDistance = 5000.0f;
 
 	virtual void BeginPlay() override;
 
