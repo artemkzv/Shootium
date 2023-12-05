@@ -4,6 +4,9 @@
 #include "Components/ShootiumWeaponComponent.h"
 #include "Weapon/ShootiumBaseWeapon.h"
 #include "GameFramework/Character.h"
+#include "Animations/ShootiumEquipFinishedAN.h"
+
+DEFINE_LOG_CATEGORY_STATIC(LogWeaponComponent, All, All);
 
 UShootiumWeaponComponent::UShootiumWeaponComponent()
 {
@@ -17,6 +20,7 @@ void UShootiumWeaponComponent::BeginPlay()
 	Super::BeginPlay();
 
     CurrentWeaponIndex = 0;
+    InitAnimations();
 	SpawnWeapons();
     EquipWeapon(CurrentWeaponIndex);
 }
@@ -73,9 +77,8 @@ void UShootiumWeaponComponent::EquipWeapon(int32 WeaponIndex)
 
     CurrentWeapon = Weapons[WeaponIndex];
     AttachWeaponToSocket(CurrentWeapon, Character->GetMesh(), WeaponEquipSocketName);
+    PlayAnimMontage(EquipAnimMontage);
 }
-
-
 
 void UShootiumWeaponComponent::StartFire() 
 {
@@ -93,4 +96,38 @@ void UShootiumWeaponComponent::NextWeapon()
 {
     CurrentWeaponIndex = (CurrentWeaponIndex + 1) % Weapons.Num();
     EquipWeapon(CurrentWeaponIndex);
+}
+
+void UShootiumWeaponComponent::PlayAnimMontage(UAnimMontage* Animation) 
+{
+    ACharacter* Character = Cast<ACharacter>(GetOwner());
+    if (!Character) return;
+
+    Character->PlayAnimMontage(Animation);
+}
+
+void UShootiumWeaponComponent::InitAnimations() 
+{
+    if (!EquipAnimMontage) return;
+    const auto NotifyEvents = EquipAnimMontage->Notifies;
+    for (auto NotifyEvent : NotifyEvents)
+    {
+        auto EquipFinishedNotify = Cast<UShootiumEquipFinishedAN>(NotifyEvent.Notify);
+        if (EquipFinishedNotify)
+        {
+            EquipFinishedNotify->OnNotified.AddUObject(this, &UShootiumWeaponComponent::OnEquipFinished);
+            break;
+        }
+    }
+}
+
+void UShootiumWeaponComponent::OnEquipFinished(USkeletalMeshComponent* MeshComp)
+{
+    ACharacter* Character = Cast<ACharacter>(GetOwner());
+    if (!Character) return;
+
+    if (Character->GetMesh() == MeshComp)
+    {
+        UE_LOG(LogWeaponComponent, Display, TEXT("Equip Finished"));
+    }
 }
