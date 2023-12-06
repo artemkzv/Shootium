@@ -12,7 +12,7 @@ void AShootiumLauncherWeapon::StartFire()
 
 void AShootiumLauncherWeapon::MakeShot() 
 {
-    if (!GetWorld()) return;
+    if (!GetWorld() || IsAmmoEmpty()) return;
 
     FVector TraceStart, TraceEnd;
     if (!GetTraceData(TraceStart, TraceEnd)) return;
@@ -32,4 +32,5 @@ void AShootiumLauncherWeapon::MakeShot()
         Projectile->SetOwner(GetOwner());
         Projectile->FinishSpawning(SpawnTransform);
     }
+    DecreaseAmmo();
 }

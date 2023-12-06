@@ -9,6 +9,11 @@ DEFINE_LOG_CATEGORY_STATIC(LogRifleWeapon, All, All);
 
 void AShootiumRifleWeapon::StartFire()
 {
+    if (!GetWorld() || IsAmmoEmpty())
+    {
+        StopFire();
+        return;
+    }
     MakeShot();
     GetWorldTimerManager().SetTimer(ShotTimerHandle, this, &AShootiumRifleWeapon::MakeShot, TimeBetweenShot, true);
 }
@@ -20,12 +25,19 @@ void AShootiumRifleWeapon::StopFire()
 
 void AShootiumRifleWeapon::MakeShot()
 {
-    if (!GetWorld())
+    UE_LOG(LogRifleWeapon, Display, TEXT("Make Shot"));
+    if (!GetWorld() || IsAmmoEmpty())
+    {
+        StopFire();
         return;
+    }
 
     FVector TraceStart, TraceEnd;
     if (!GetTraceData(TraceStart, TraceEnd))
+    {
+        StopFire();
         return;
+    }
 
     FHitResult HitResult;
     MakeHit(HitResult, TraceStart, TraceEnd);
@@ -42,6 +54,8 @@ void AShootiumRifleWeapon::MakeShot()
     {
         DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::White, false, 3.0f, 0, 3.0f);
     }
+
+    DecreaseAmmo();
 }
 
 bool AShootiumRifleWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const

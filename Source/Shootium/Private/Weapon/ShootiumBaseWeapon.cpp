@@ -24,7 +24,7 @@ void AShootiumBaseWeapon::BeginPlay()
 	Super::BeginPlay();
 
 	check(WeaponMesh);
-	
+    CurrentAmmo = DefaultAmmmo;
 }
 
 
@@ -87,6 +87,44 @@ void AShootiumBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceSta
     CollisionParams.AddIgnoredActor(GetOwner());
 
     GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionParams);
+}
+
+void AShootiumBaseWeapon::DecreaseAmmo() 
+{
+    CurrentAmmo.Bullets--;
+    LogAmmo();
+
+    if (IsClipEmpty() && !IsAmmoEmpty())
+    {
+        ChangeClip(); 
+    }
+}
+
+bool AShootiumBaseWeapon::IsAmmoEmpty() const
+{
+    return !CurrentAmmo.Infinite && CurrentAmmo.Clips == 0 && IsClipEmpty();
+}
+
+bool AShootiumBaseWeapon::IsClipEmpty() const
+{
+    return CurrentAmmo.Bullets == 0;
+}
+
+void AShootiumBaseWeapon::ChangeClip() 
+{
+    CurrentAmmo.Bullets = DefaultAmmmo.Bullets;
+    if (!CurrentAmmo.Infinite)
+    {
+        CurrentAmmo.Clips--;
+    }
+    UE_LOG(LogBaseWeapon, Display, TEXT(" --------- CHANGE CLIP --------- "));
+}
+
+void AShootiumBaseWeapon::LogAmmo() 
+{
+    FString AmmoInfo = "Ammo: " + FString::FromInt(CurrentAmmo.Bullets) + " / ";
+    AmmoInfo += CurrentAmmo.Infinite ? "Infinite" : FString::FromInt(CurrentAmmo.Clips);
+    UE_LOG(LogBaseWeapon, Display, TEXT("%s"), *AmmoInfo);
 }
 
 
