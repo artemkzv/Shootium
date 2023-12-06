@@ -44,6 +44,7 @@ private:
     TArray<AShootiumBaseWeapon*> Weapons;
 
 	int32 CurrentWeaponIndex = 0;
+    bool EquipAnimProgress = false;
 
     void SpawnWeapons();
     void AttachWeaponToSocket(AShootiumBaseWeapon* Weapon, USceneComponent* SceneComponent, const FName& SocketName);
@@ -51,4 +52,7 @@ private:
     void PlayAnimMontage(UAnimMontage* Animation);
     void InitAnimations();
     void OnEquipFinished(USkeletalMeshComponent* MeshComp);
+
+    bool CanFire();
+    bool CanEquip();
 };

@@ -77,12 +77,13 @@ void UShootiumWeaponComponent::EquipWeapon(int32 WeaponIndex)
 
     CurrentWeapon = Weapons[WeaponIndex];
     AttachWeaponToSocket(CurrentWeapon, Character->GetMesh(), WeaponEquipSocketName);
+    EquipAnimProgress = true;
     PlayAnimMontage(EquipAnimMontage);
 }
 
 void UShootiumWeaponComponent::StartFire() 
 {
-    if (!CurrentWeapon) return;
+    if (!CanFire()) return;
     CurrentWeapon->StartFire();
 }
 
@@ -94,6 +95,8 @@ void UShootiumWeaponComponent::StopFire()
 
 void UShootiumWeaponComponent::NextWeapon()
 {
+    if (!CanEquip()) return;
+
     CurrentWeaponIndex = (CurrentWeaponIndex + 1) % Weapons.Num();
     EquipWeapon(CurrentWeaponIndex);
 }
@@ -124,10 +127,18 @@ void UShootiumWeaponComponent::InitAnimations()
 void UShootiumWeaponComponent::OnEquipFinished(USkeletalMeshComponent* MeshComp)
 {
     ACharacter* Character = Cast<ACharacter>(GetOwner());
-    if (!Character) return;
+    if (!Character || MeshComp != Character->GetMesh()) return;
+ 
+        EquipAnimProgress = false;
 
-    if (Character->GetMesh() == MeshComp)
-    {
-        UE_LOG(LogWeaponComponent, Display, TEXT("Equip Finished"));
-    }
+}
+
+bool UShootiumWeaponComponent::CanFire()
+{
+        return CurrentWeapon && !EquipAnimProgress;
+}
+
+bool UShootiumWeaponComponent::CanEquip()
+{
+    return !EquipAnimProgress;
 }
