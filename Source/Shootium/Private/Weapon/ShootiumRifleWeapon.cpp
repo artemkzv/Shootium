@@ -14,8 +14,8 @@ void AShootiumRifleWeapon::StartFire()
         StopFire();
         return;
     }
-    MakeShot();
     GetWorldTimerManager().SetTimer(ShotTimerHandle, this, &AShootiumRifleWeapon::MakeShot, TimeBetweenShot, true);
+    MakeShot();
 }
 
 void AShootiumRifleWeapon::StopFire()

@@ -24,7 +24,7 @@ void AShootiumBaseWeapon::BeginPlay()
 	Super::BeginPlay();
 
 	check(WeaponMesh);
-    CurrentAmmo = DefaultAmmmo;
+    CurrentAmmo = DefaultAmmo;
 }
 
 
@@ -91,12 +91,19 @@ void AShootiumBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceSta
 
 void AShootiumBaseWeapon::DecreaseAmmo() 
 {
+    if (CurrentAmmo.Bullets == 0)
+    {
+        UE_LOG(LogBaseWeapon, Warning, TEXT("Clip is empty"));
+        return;
+    }
+
     CurrentAmmo.Bullets--;
     LogAmmo();
 
     if (IsClipEmpty() && !IsAmmoEmpty())
     {
-        ChangeClip(); 
+        StopFire();
+        OnClipEmpty.Broadcast();
     }
 }
 
@@ -112,12 +119,23 @@ bool AShootiumBaseWeapon::IsClipEmpty() const
 
 void AShootiumBaseWeapon::ChangeClip() 
 {
-    CurrentAmmo.Bullets = DefaultAmmmo.Bullets;
+
     if (!CurrentAmmo.Infinite)
     {
+        if (CurrentAmmo.Clips == 0)
+        {
+            UE_LOG(LogBaseWeapon, Warning, TEXT("No more clips"));
+            return;
+        }
         CurrentAmmo.Clips--;
     }
+    CurrentAmmo.Bullets = DefaultAmmo.Bullets;
     UE_LOG(LogBaseWeapon, Display, TEXT(" --------- CHANGE CLIP --------- "));
+}
+
+bool AShootiumBaseWeapon::CanReload() const
+{
+    return CurrentAmmo.Bullets < DefaultAmmo.Bullets && CurrentAmmo.Clips > 0;
 }
 
 void AShootiumBaseWeapon::LogAmmo() 

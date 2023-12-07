@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "ShootiumBaseWeapon.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnClipEmptySignature);
+
 class USkeletalMeshComponent;
 
 USTRUCT(BlueprintType)
@@ -31,8 +33,13 @@ class SHOOTIUM_API AShootiumBaseWeapon : public AActor
 public:	
 	AShootiumBaseWeapon();
 
+    FOnClipEmptySignature OnClipEmpty;
+
 	virtual void StartFire();
     virtual void StopFire();
+
+    void ChangeClip();
+    bool CanReload() const; 
 
 protected:
     UPROPERTY(VisibleAnyWhere, BlueprintReadWrite, Category = "Components")
@@ -45,7 +52,7 @@ protected:
     float TraceMaxDistance = 5000.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-    FAmmoData DefaultAmmmo;
+    FAmmoData DefaultAmmo;
 
 	virtual void BeginPlay() override;
 
@@ -61,7 +68,7 @@ protected:
     void DecreaseAmmo();
     bool IsAmmoEmpty() const;
     bool IsClipEmpty() const;
-    void ChangeClip();
+
     void LogAmmo();
     
 private:

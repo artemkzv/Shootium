@@ -48,6 +48,7 @@ void UShootiumWeaponComponent::SpawnWeapons()
         if (!Weapon)
             continue;
 
+        Weapon->OnClipEmpty.AddUObject(this, &UShootiumWeaponComponent::OnEmptyClip);
         Weapon->SetOwner(Character);
         Weapons.Add(Weapon);
 
@@ -84,7 +85,7 @@ void UShootiumWeaponComponent::EquipWeapon(int32 WeaponIndex)
     CurrentWeapon = Weapons[WeaponIndex];
     // CurrentReloadAnimMontage = WeaponData[WeaponIndex].ReloadAnimMontage;
     const auto CurrentWeaponData = WeaponData.FindByPredicate([&](const FWeaponData& Data) { //
-        return Data.WeaponClass == CurrentWeapon->GetClass();                          //
+        return Data.WeaponClass == CurrentWeapon->GetClass();                                //
     });
     CurrentReloadAnimMontage = CurrentWeaponData ? CurrentWeaponData->ReloadAnimMontage : nullptr;
 
@@ -136,10 +137,10 @@ void UShootiumWeaponComponent::InitAnimations()
     for (auto OneWeaponData : WeaponData)
     {
         auto ReloadinishedNotify = FindNotifyByClass<UShootiumReloadFinishedAN>(OneWeaponData.ReloadAnimMontage);
-        if (!ReloadinishedNotify) continue;
+        if (!ReloadinishedNotify)
+            continue;
 
         ReloadinishedNotify->OnNotified.AddUObject(this, &UShootiumWeaponComponent::OnReloadFinished);
-
     }
 }
 
@@ -173,12 +174,27 @@ bool UShootiumWeaponComponent::CanEquip()
 
 bool UShootiumWeaponComponent::CanReload()
 {
-    return CurrentWeapon && !EquipAnimProgress && !ReloadAnimProgress;
+    return CurrentWeapon          //
+           && !EquipAnimProgress  //
+           && !ReloadAnimProgress //
+           && CurrentWeapon->CanReload();
 }
 
-void UShootiumWeaponComponent::Reload() 
+void UShootiumWeaponComponent::Reload()
+{
+    ChangeClip();
+}
+
+void UShootiumWeaponComponent::OnEmptyClip()
+{
+    ChangeClip();
+}
+
+void UShootiumWeaponComponent::ChangeClip()
 {
     if (!CanReload()) return;
+    CurrentWeapon->StopFire();
+    CurrentWeapon->ChangeClip();
     ReloadAnimProgress = true;
     PlayAnimMontage(CurrentReloadAnimMontage);
 }
