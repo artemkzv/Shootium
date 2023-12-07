@@ -17,6 +17,12 @@ class SHOOTIUM_API AShootiumGameHUD : public AHUD
 public:
     virtual void DrawHUD() override;
 
+protected:
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, CAtegory = "UI")
+    TSubclassOf<UUserWidget> PlayerHUDWidgetClass;
+
+    virtual void BeginPlay() override;
+
 private:
     void DrawCrossHair();
 };

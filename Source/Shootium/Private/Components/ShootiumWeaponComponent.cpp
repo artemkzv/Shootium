@@ -5,8 +5,12 @@
 #include "GameFramework/Character.h"
 #include "Animations/ShootiumEquipFinishedAN.h"
 #include "Animations/ShootiumReloadFinishedAN.h"
+#include "Animations/AnimUtils.h"
+
 
 DEFINE_LOG_CATEGORY_STATIC(LogWeaponComponent, All, All);
+
+constexpr static int32 WeaponNum = 2;
 
 UShootiumWeaponComponent::UShootiumWeaponComponent()
 {
@@ -17,8 +21,10 @@ void UShootiumWeaponComponent::BeginPlay()
 {
     Super::BeginPlay();
 
-    CurrentWeaponIndex = 0;
+    checkf(WeaponData.Num() == WeaponNum, TEXT("Our character can hold only %i weapon items"), WeaponNum);
+
     InitAnimations();
+    CurrentWeaponIndex = 0;
     SpawnWeapons();
     EquipWeapon(CurrentWeaponIndex);
 }
@@ -128,17 +134,25 @@ void UShootiumWeaponComponent::PlayAnimMontage(UAnimMontage* Animation)
 
 void UShootiumWeaponComponent::InitAnimations()
 {
-    auto EquipFinishedNotify = FindNotifyByClass<UShootiumEquipFinishedAN>(EquipAnimMontage);
+    auto EquipFinishedNotify = AnimUtils::FindNotifyByClass<UShootiumEquipFinishedAN>(EquipAnimMontage);
     if (EquipFinishedNotify)
     {
         EquipFinishedNotify->OnNotified.AddUObject(this, &UShootiumWeaponComponent::OnEquipFinished);
     }
+    else
+    {
+        UE_LOG(LogWeaponComponent, Error, TEXT("Equip anom notify is forgotten to set"));
+        checkNoEntry();
+    }
 
     for (auto OneWeaponData : WeaponData)
     {
-        auto ReloadinishedNotify = FindNotifyByClass<UShootiumReloadFinishedAN>(OneWeaponData.ReloadAnimMontage);
+        auto ReloadinishedNotify = AnimUtils::FindNotifyByClass<UShootiumReloadFinishedAN>(OneWeaponData.ReloadAnimMontage);
         if (!ReloadinishedNotify)
-            continue;
+        {
+            UE_LOG(LogWeaponComponent, Error, TEXT("Reload anom notify is forgotten to set"));
+            checkNoEntry();
+        }
 
         ReloadinishedNotify->OnNotified.AddUObject(this, &UShootiumWeaponComponent::OnReloadFinished);
     }

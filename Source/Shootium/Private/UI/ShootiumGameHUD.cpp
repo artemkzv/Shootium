@@ -3,6 +3,7 @@
 
 #include "UI/ShootiumGameHUD.h"
 #include "Engine/Canvas.h"
+#include "Blueprint/UserWidget.h"
 
 void AShootiumGameHUD::DrawHUD() 
 {
@@ -11,7 +12,18 @@ void AShootiumGameHUD::DrawHUD()
     DrawCrossHair();
 }
 
-void AShootiumGameHUD::DrawCrossHair() 
+void AShootiumGameHUD::BeginPlay() 
+{
+    Super::BeginPlay();
+
+    auto PlayerHUDWidget = CreateWidget<UUserWidget>(GetWorld(), PlayerHUDWidgetClass);
+    if (PlayerHUDWidget)
+    {
+        PlayerHUDWidget->AddToViewport();
+    }
+}
+
+void AShootiumGameHUD::DrawCrossHair()
 {
     const TInterval<float> Center(Canvas->SizeX * 0.5f, Canvas->SizeY * 0.5f);
 
