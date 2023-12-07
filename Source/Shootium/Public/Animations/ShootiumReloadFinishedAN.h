@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Animations/ShootiumAnimNotify.h"
-#include "ShootiumEquipFinishedAN.generated.h"
+#include "ShootiumReloadFinishedAN.generated.h"
 
-
-
+/**
+ * 
+ */
 UCLASS()
-class SHOOTIUM_API UShootiumEquipFinishedAN : public UShootiumAnimNotify
+class SHOOTIUM_API UShootiumReloadFinishedAN : public UShootiumAnimNotify
 {
 	GENERATED_BODY()
 	
-
 };

@@ -8,6 +8,18 @@
 
 class AShootiumBaseWeapon;
 
+USTRUCT(BlueprintType)
+struct FWeaponData
+{
+    GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+    TSubclassOf<AShootiumBaseWeapon> WeaponClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+    UAnimMontage* ReloadAnimMontage;
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SHOOTIUM_API UShootiumWeaponComponent : public UActorComponent
 {
@@ -19,10 +31,11 @@ public:
 	void StartFire();
     void StopFire();
     void NextWeapon();
+    void Reload();
 
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-    TArray<TSubclassOf<AShootiumBaseWeapon>> WeaponClasses;
+    TArray < FWeaponData> WeaponData;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	FName WeaponEquipSocketName = "RifleHandSocket";
@@ -43,8 +56,12 @@ private:
 	UPROPERTY()
     TArray<AShootiumBaseWeapon*> Weapons;
 
+    UPROPERTY()
+    UAnimMontage* CurrentReloadAnimMontage = nullptr;
+
 	int32 CurrentWeaponIndex = 0;
     bool EquipAnimProgress = false;
+    bool ReloadAnimProgress = false;
 
     void SpawnWeapons();
     void AttachWeaponToSocket(AShootiumBaseWeapon* Weapon, USceneComponent* SceneComponent, const FName& SocketName);
@@ -52,7 +69,26 @@ private:
     void PlayAnimMontage(UAnimMontage* Animation);
     void InitAnimations();
     void OnEquipFinished(USkeletalMeshComponent* MeshComp);
+    void OnReloadFinished(USkeletalMeshComponent* MeshComp);
 
     bool CanFire();
     bool CanEquip();
+    bool CanReload();
+
+    template<typename T> 
+    T* FindNotifyByClass(UAnimSequenceBase* Animation)
+    {
+        if (!Animation) return nullptr;
+
+        const auto NotifyEvents = Animation->Notifies;
+        for (auto NotifyEvent : NotifyEvents)
+        {
+            auto AnimNotify = Cast<T>(NotifyEvent.Notify);
+            if (AnimNotify)
+            {
+                return AnimNotify;
+            }
+        }
+        return nullptr;
+    }
 };

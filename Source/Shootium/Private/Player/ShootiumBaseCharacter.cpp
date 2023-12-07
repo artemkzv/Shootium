@@ -82,6 +82,7 @@ void AShootiumBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
     PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &UShootiumWeaponComponent::StartFire);
     PlayerInputComponent->BindAction("Fire", IE_Released, WeaponComponent, &UShootiumWeaponComponent::StopFire);
     PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, WeaponComponent, &UShootiumWeaponComponent::NextWeapon);
+    PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &UShootiumWeaponComponent::Reload);
 }
 
 void AShootiumBaseCharacter::MoveForward(float Amount) 

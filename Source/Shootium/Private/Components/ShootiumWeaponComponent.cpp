@@ -1,31 +1,29 @@
 // Shootium Game. All Rights Reserved.
 
-
 #include "Components/ShootiumWeaponComponent.h"
 #include "Weapon/ShootiumBaseWeapon.h"
 #include "GameFramework/Character.h"
 #include "Animations/ShootiumEquipFinishedAN.h"
+#include "Animations/ShootiumReloadFinishedAN.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogWeaponComponent, All, All);
 
 UShootiumWeaponComponent::UShootiumWeaponComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
-
+    PrimaryComponentTick.bCanEverTick = false;
 }
-
 
 void UShootiumWeaponComponent::BeginPlay()
 {
-	Super::BeginPlay();
+    Super::BeginPlay();
 
     CurrentWeaponIndex = 0;
     InitAnimations();
-	SpawnWeapons();
+    SpawnWeapons();
     EquipWeapon(CurrentWeaponIndex);
 }
 
-void UShootiumWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason) 
+void UShootiumWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     CurrentWeapon = nullptr;
     for (auto Weapon : Weapons)
@@ -38,16 +36,17 @@ void UShootiumWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
     Super::EndPlay(EndPlayReason);
 }
 
-
 void UShootiumWeaponComponent::SpawnWeapons()
 {
     ACharacter* Character = Cast<ACharacter>(GetOwner());
-    if (!Character || !GetWorld()) return;
+    if (!Character || !GetWorld())
+        return;
 
-    for (auto WeaponClass : WeaponClasses)
+    for (auto OneWeaponData : WeaponData)
     {
-        auto Weapon = GetWorld()->SpawnActor<AShootiumBaseWeapon>(WeaponClass);
-        if (!Weapon) continue;
+        auto Weapon = GetWorld()->SpawnActor<AShootiumBaseWeapon>(OneWeaponData.WeaponClass);
+        if (!Weapon)
+            continue;
 
         Weapon->SetOwner(Character);
         Weapons.Add(Weapon);
@@ -58,16 +57,23 @@ void UShootiumWeaponComponent::SpawnWeapons()
 
 void UShootiumWeaponComponent::AttachWeaponToSocket(AShootiumBaseWeapon* Weapon, USceneComponent* SceneComponent, const FName& SocketName)
 {
-    if (!Weapon || !SceneComponent) return;
+    if (!Weapon || !SceneComponent)
+        return;
     FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
     Weapon->AttachToComponent(SceneComponent, AttachmentRules, SocketName);
 }
 
-
-void UShootiumWeaponComponent::EquipWeapon(int32 WeaponIndex) 
+void UShootiumWeaponComponent::EquipWeapon(int32 WeaponIndex)
 {
+    if (WeaponIndex < 0 || WeaponIndex >= Weapons.Num())
+    {
+        UE_LOG(LogWeaponComponent, Warning, TEXT("Invalid weapon index"));
+        return;
+    }
+
     ACharacter* Character = Cast<ACharacter>(GetOwner());
-    if (!Character) return;
+    if (!Character)
+        return;
 
     if (CurrentWeapon)
     {
@@ -76,69 +82,103 @@ void UShootiumWeaponComponent::EquipWeapon(int32 WeaponIndex)
     }
 
     CurrentWeapon = Weapons[WeaponIndex];
+    // CurrentReloadAnimMontage = WeaponData[WeaponIndex].ReloadAnimMontage;
+    const auto CurrentWeaponData = WeaponData.FindByPredicate([&](const FWeaponData& Data) { //
+        return Data.WeaponClass == CurrentWeapon->GetClass();                          //
+    });
+    CurrentReloadAnimMontage = CurrentWeaponData ? CurrentWeaponData->ReloadAnimMontage : nullptr;
+
     AttachWeaponToSocket(CurrentWeapon, Character->GetMesh(), WeaponEquipSocketName);
     EquipAnimProgress = true;
     PlayAnimMontage(EquipAnimMontage);
 }
 
-void UShootiumWeaponComponent::StartFire() 
+void UShootiumWeaponComponent::StartFire()
 {
-    if (!CanFire()) return;
+    if (!CanFire())
+        return;
     CurrentWeapon->StartFire();
 }
 
 void UShootiumWeaponComponent::StopFire()
 {
-    if (!CurrentWeapon) return;
+    if (!CurrentWeapon)
+        return;
     CurrentWeapon->StopFire();
 }
 
 void UShootiumWeaponComponent::NextWeapon()
 {
-    if (!CanEquip()) return;
+    if (!CanEquip())
+        return;
 
     CurrentWeaponIndex = (CurrentWeaponIndex + 1) % Weapons.Num();
     EquipWeapon(CurrentWeaponIndex);
 }
 
-void UShootiumWeaponComponent::PlayAnimMontage(UAnimMontage* Animation) 
+void UShootiumWeaponComponent::PlayAnimMontage(UAnimMontage* Animation)
 {
     ACharacter* Character = Cast<ACharacter>(GetOwner());
-    if (!Character) return;
+    if (!Character)
+        return;
 
     Character->PlayAnimMontage(Animation);
 }
 
-void UShootiumWeaponComponent::InitAnimations() 
+void UShootiumWeaponComponent::InitAnimations()
 {
-    if (!EquipAnimMontage) return;
-    const auto NotifyEvents = EquipAnimMontage->Notifies;
-    for (auto NotifyEvent : NotifyEvents)
+    auto EquipFinishedNotify = FindNotifyByClass<UShootiumEquipFinishedAN>(EquipAnimMontage);
+    if (EquipFinishedNotify)
     {
-        auto EquipFinishedNotify = Cast<UShootiumEquipFinishedAN>(NotifyEvent.Notify);
-        if (EquipFinishedNotify)
-        {
-            EquipFinishedNotify->OnNotified.AddUObject(this, &UShootiumWeaponComponent::OnEquipFinished);
-            break;
-        }
+        EquipFinishedNotify->OnNotified.AddUObject(this, &UShootiumWeaponComponent::OnEquipFinished);
+    }
+
+    for (auto OneWeaponData : WeaponData)
+    {
+        auto ReloadinishedNotify = FindNotifyByClass<UShootiumReloadFinishedAN>(OneWeaponData.ReloadAnimMontage);
+        if (!ReloadinishedNotify) continue;
+
+        ReloadinishedNotify->OnNotified.AddUObject(this, &UShootiumWeaponComponent::OnReloadFinished);
+
     }
 }
 
 void UShootiumWeaponComponent::OnEquipFinished(USkeletalMeshComponent* MeshComp)
 {
     ACharacter* Character = Cast<ACharacter>(GetOwner());
-    if (!Character || MeshComp != Character->GetMesh()) return;
- 
-        EquipAnimProgress = false;
+    if (!Character || MeshComp != Character->GetMesh())
+        return;
 
+    EquipAnimProgress = false;
+}
+
+void UShootiumWeaponComponent::OnReloadFinished(USkeletalMeshComponent* MeshComp)
+{
+    ACharacter* Character = Cast<ACharacter>(GetOwner());
+    if (!Character || MeshComp != Character->GetMesh())
+        return;
+
+    ReloadAnimProgress = false;
 }
 
 bool UShootiumWeaponComponent::CanFire()
 {
-        return CurrentWeapon && !EquipAnimProgress;
+    return CurrentWeapon && !EquipAnimProgress && !ReloadAnimProgress;
 }
 
 bool UShootiumWeaponComponent::CanEquip()
 {
-    return !EquipAnimProgress;
+    return !EquipAnimProgress && !ReloadAnimProgress;
+}
+
+bool UShootiumWeaponComponent::CanReload()
+{
+    return CurrentWeapon && !EquipAnimProgress && !ReloadAnimProgress;
+}
+
+void UShootiumWeaponComponent::Reload() 
+{
+    if (!CanReload()) return;
+    ReloadAnimProgress = true;
+    PlayAnimMontage(CurrentReloadAnimMontage);
 }
