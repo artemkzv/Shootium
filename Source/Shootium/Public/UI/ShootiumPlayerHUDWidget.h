@@ -7,8 +7,6 @@
 #include "ShootiumCoreTypes.h"
 #include "ShootiumPlayerHUDWidget.generated.h"
 
-class UShootiumWeaponComponent;
-
 UCLASS()
 class SHOOTIUM_API UShootiumPlayerHUDWidget : public UUserWidget
 {
@@ -24,6 +22,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
     bool GetCurrentWeaponAmmoData(FAmmoData& AmmoData) const;
 
-private:
-    UShootiumWeaponComponent* GetWeaponComponent() const;
+    UFUNCTION(BlueprintCallable, Category = "UI")
+    bool IsPlayerALive() const;
+
+    UFUNCTION(BlueprintCallable, Category = "UI")
+    bool IsPlayerSpectating() const;
+
+
 };
