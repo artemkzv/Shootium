@@ -9,7 +9,7 @@ void AShootiumGameHUD::DrawHUD()
 {
     Super::DrawHUD();
 
-    DrawCrossHair();
+    //DrawCrossHair();
 }
 
 void AShootiumGameHUD::BeginPlay() 

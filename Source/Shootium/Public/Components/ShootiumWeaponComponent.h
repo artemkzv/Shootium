@@ -9,48 +9,51 @@
 
 class AShootiumBaseWeapon;
 
-
-
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SHOOTIUM_API UShootiumWeaponComponent : public UActorComponent
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-public:	
-	UShootiumWeaponComponent();
+public:
+    UShootiumWeaponComponent();
 
-	void StartFire();
+    void StartFire();
     void StopFire();
     void NextWeapon();
     void Reload();
 
+    bool GetCurrentWeaponUIData(FWeaponUIData& UIData) const;
+    bool GetCurrentWeaponAmmoData(FAmmoData& AmmoData) const;
+
+
+
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-    TArray < FWeaponData> WeaponData;
+    TArray<FWeaponData> WeaponData;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
-	FName WeaponEquipSocketName = "RifleHandSocket";
+    UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+    FName WeaponEquipSocketName = "RifleHandSocket";
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+    UPROPERTY(EditDefaultsOnly, Category = "Weapon")
     FName WeaponHolsterSocketName = "LauncherHolsterSocket";
 
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
     UAnimMontage* EquipAnimMontage;
 
-	virtual void BeginPlay() override;
-    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override; 
+    virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
     UPROPERTY()
     AShootiumBaseWeapon* CurrentWeapon = nullptr;
 
-	UPROPERTY()
+    UPROPERTY()
     TArray<AShootiumBaseWeapon*> Weapons;
 
     UPROPERTY()
     UAnimMontage* CurrentReloadAnimMontage = nullptr;
 
-	int32 CurrentWeaponIndex = 0;
+    int32 CurrentWeaponIndex = 0;
     bool EquipAnimProgress = false;
     bool ReloadAnimProgress = false;
 
@@ -68,6 +71,4 @@ private:
 
     void OnEmptyClip();
     void ChangeClip();
-
-
 };
