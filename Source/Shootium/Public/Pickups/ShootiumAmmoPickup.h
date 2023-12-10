@@ -14,4 +14,6 @@ class SHOOTIUM_API AShootiumAmmoPickup : public AShootiumBasePickup
 {
 	GENERATED_BODY()
 	
+private:
+    virtual bool GivePickupTo(APawn* PlayerPawn) override;
 };
