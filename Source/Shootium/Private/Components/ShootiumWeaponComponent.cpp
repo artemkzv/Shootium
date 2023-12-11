@@ -219,9 +219,33 @@ bool UShootiumWeaponComponent::GetCurrentWeaponAmmoData(FAmmoData& AmmoData) con
     return false;
 }
 
-void UShootiumWeaponComponent::OnEmptyClip()
+bool UShootiumWeaponComponent::TryToAddAmmo(TSubclassOf<AShootiumBaseWeapon> WeaponType, int32 ClipsAmount)
 {
-    ChangeClip();
+    for (const auto Weapon : Weapons)
+    {
+        if (Weapon && Weapon->IsA(WeaponType))
+        {
+            return Weapon->TryToAddAmmo(ClipsAmount);
+        }
+    }
+    return false;
+}
+
+void UShootiumWeaponComponent::OnEmptyClip(AShootiumBaseWeapon* AmmoEmptyWeapon)
+{
+    if (!AmmoEmptyWeapon) return;
+    if (CurrentWeapon == AmmoEmptyWeapon)
+    {
+        ChangeClip();
+    }
+    else
+    {
+        for (const auto Weapon : Weapons)
+            if (Weapon == AmmoEmptyWeapon)
+            {
+                Weapon->ChangeClip();
+            }
+    }
 }
 
 void UShootiumWeaponComponent::ChangeClip()

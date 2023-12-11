@@ -15,6 +15,8 @@ UShootiumHealthComponent::UShootiumHealthComponent()
 
 }
 
+
+
 void UShootiumHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -54,7 +56,7 @@ void UShootiumHealthComponent::HealUpdate()
 {
     SetHealth(Health + HealModifier);
 
-	if (FMath::IsNearlyEqual(Health, MaxHealth) && GetWorld())
+	if (IsHealthFull() && GetWorld())
 	{
         GetWorld()->GetTimerManager().ClearTimer(HealTimerHandle);
 	}
@@ -66,5 +68,17 @@ void UShootiumHealthComponent::SetHealth(float NewHealth)
     OnHealthChanged.Broadcast(Health);
 }
 
+bool UShootiumHealthComponent::TryToAddHealth(float HealthAmount)
+{
+    if (IsDead() || IsHealthFull())
+        return false;
 
+	SetHealth(Health + HealthAmount);
+    return true;
+}
+
+bool UShootiumHealthComponent::IsHealthFull() const
+{
+    return FMath::IsNearlyEqual(Health, MaxHealth);
+}
 

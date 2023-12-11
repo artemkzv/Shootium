@@ -2,11 +2,15 @@
 
 
 #include "Pickups/ShootiumHealthPickup.h"
+#include "Components/ShootiumHealthComponent.h"
+#include "ShootiumUtils.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogHealthPickup, All, All);
 
 bool AShootiumHealthPickup::GivePickupTo(APawn* PlayerPawn)
 {
-    UE_LOG(LogHealthPickup, Display, TEXT("HealthPickup was taken"));
-    return true;
+    const auto HealthComponent = ShootiumUtils::GetShootiumPlayerComponent<UShootiumHealthComponent>(PlayerPawn);
+    if (!HealthComponent) return false;
+
+    return HealthComponent->TryToAddHealth(HealthAmount);
 }

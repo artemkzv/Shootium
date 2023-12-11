@@ -25,7 +25,7 @@ public:
     bool GetCurrentWeaponUIData(FWeaponUIData& UIData) const;
     bool GetCurrentWeaponAmmoData(FAmmoData& AmmoData) const;
 
-
+    bool TryToAddAmmo(TSubclassOf<AShootiumBaseWeapon> WeaponType, int32 ClipsAmount);
 
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
@@ -69,6 +69,6 @@ private:
     bool CanEquip();
     bool CanReload();
 
-    void OnEmptyClip();
+    void OnEmptyClip(AShootiumBaseWeapon* AmmoEmptyWeapon);
     void ChangeClip();
 };
