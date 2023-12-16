@@ -6,6 +6,7 @@
 #include "Weapon/ShootiumBaseWeapon.h"
 #include "ShootiumRifleWeapon.generated.h"
 
+class UShootiumWeaponFXComponent;
 
 UCLASS()
 class SHOOTIUM_API AShootiumRifleWeapon : public AShootiumBaseWeapon
@@ -13,6 +14,8 @@ class SHOOTIUM_API AShootiumRifleWeapon : public AShootiumBaseWeapon
 	GENERATED_BODY()
 	
 public:
+    AShootiumRifleWeapon();
+
     virtual void StartFire() override;
     virtual void StopFire() override;
 
@@ -26,6 +29,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     float DamageAmount = 10.0f;
 
+    UPROPERTY(VisibleAnywhere, Category = "VFX")
+    UShootiumWeaponFXComponent* WeaponFXComponent;
+
+    virtual void BeginPlay() override;
     virtual void MakeShot() override;
     virtual bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const override;
 

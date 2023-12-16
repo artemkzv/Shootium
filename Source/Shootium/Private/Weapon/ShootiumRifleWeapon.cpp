@@ -4,8 +4,22 @@
 #include "Weapon/ShootiumRifleWeapon.h"
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
+#include "Weapon/Components/ShootiumWeaponFXComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogRifleWeapon, All, All);
+
+AShootiumRifleWeapon::AShootiumRifleWeapon() 
+{
+    WeaponFXComponent = CreateDefaultSubobject<UShootiumWeaponFXComponent>("WeaponFXComponent");
+}
+
+
+void AShootiumRifleWeapon::BeginPlay() 
+{
+    Super::BeginPlay();
+
+    check(WeaponFXComponent);
+}
 
 void AShootiumRifleWeapon::StartFire()
 {
@@ -22,6 +36,7 @@ void AShootiumRifleWeapon::StopFire()
 {
     GetWorldTimerManager().ClearTimer(ShotTimerHandle);
 }
+
 
 void AShootiumRifleWeapon::MakeShot()
 {
@@ -45,8 +60,9 @@ void AShootiumRifleWeapon::MakeShot()
     if (HitResult.bBlockingHit)
     {
         MakeDamage(HitResult);
-        DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0, 3.0f);
-        DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 24, FColor::Green, false, 5.0f);
+        //DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0, 3.0f);
+        //DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 24, FColor::Green, false, 5.0f);
+        WeaponFXComponent->PlayImpactFX(HitResult);
 
         UE_LOG(LogRifleWeapon, Display, TEXT("Hit the bone: %s"), *HitResult.BoneName.ToString());
     }

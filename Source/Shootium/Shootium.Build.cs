@@ -8,7 +8,15 @@ public class Shootium : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+		PublicDependencyModuleNames.AddRange(new string[] 
+		{ 
+			"Core",
+			"CoreUObject",
+			"Engine",
+			"InputCore",
+			"Niagara",
+			"PhysicsCore"
+		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
@@ -18,7 +26,8 @@ public class Shootium : ModuleRules
 			"Shootium/Public/Components", 
 			"Shootium/Public/Dev",
 			"Shootium/Public/Weapon",
-			"Shootium/Public/UI",
+            "Shootium/Public/Weapon/Components",
+            "Shootium/Public/UI",
             "Shootium/Public/Animations",
             "Shootium/Public/Pickups"
         });
