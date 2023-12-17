@@ -3,8 +3,11 @@
 
 #include "Components/ShootiumHealthComponent.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/Pawn.h"
+#include "GameFramework/Controller.h"
 #include "Engine/World.h"
 #include "TimerManager.h"
+#include "Camera/CameraShakeBase.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogHealthComponent, All, All);
 
@@ -50,6 +53,8 @@ void UShootiumHealthComponent::OnTakeAnyDamage(
         GetWorld()->GetTimerManager().SetTimer(
             HealTimerHandle, this, &UShootiumHealthComponent::HealUpdate, HealUpdateTime, true, HealDelay);
 	}
+    PlayCameraShake();
+
 }
 
 void UShootiumHealthComponent::HealUpdate() 
@@ -68,6 +73,7 @@ void UShootiumHealthComponent::SetHealth(float NewHealth)
     OnHealthChanged.Broadcast(Health);
 }
 
+
 bool UShootiumHealthComponent::TryToAddHealth(float HealthAmount)
 {
     if (IsDead() || IsHealthFull())
@@ -82,3 +88,15 @@ bool UShootiumHealthComponent::IsHealthFull() const
     return FMath::IsNearlyEqual(Health, MaxHealth);
 }
 
+void UShootiumHealthComponent::PlayCameraShake() 
+{
+    if (IsDead()) return;
+
+	const auto Player = Cast<APawn>(GetOwner());
+    if (!Player) return;
+
+	const auto Controller = Player->GetController<APlayerController>();
+    if (!Controller || !Controller->PlayerCameraManager) return;
+
+	Controller->PlayerCameraManager->StartCameraShake(CameraShake);
+}
