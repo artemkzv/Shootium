@@ -6,6 +6,24 @@
 #include "Components/ShootiumWeaponComponent.h"
 #include "ShootiumUtils.h"
 
+bool UShootiumPlayerHUDWidget::Initialize()
+{
+    const auto HealthComponent = ShootiumUtils::GetShootiumPlayerComponent<UShootiumHealthComponent>(GetOwningPlayerPawn());
+    if (HealthComponent)
+    {
+        HealthComponent->OnHealthChanged.AddUObject(this, &UShootiumPlayerHUDWidget::OnHealthChanged);
+    }
+    return Super::Initialize();
+}
+
+void UShootiumPlayerHUDWidget::OnHealthChanged(float Health, float HealthDelta)
+{
+    if (HealthDelta < 0.0f)
+    {
+        OnTakeDamage();
+    }
+}
+
 float UShootiumPlayerHUDWidget::GetHealthPercent() const
 {
     
@@ -26,6 +44,7 @@ bool UShootiumPlayerHUDWidget::IsPlayerSpectating() const
     const auto Controller = GetOwningPlayer();
     return Controller && Controller->GetStateName() == NAME_Spectating;
 }
+
 
 
 //
