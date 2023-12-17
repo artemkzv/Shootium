@@ -33,4 +33,6 @@ void AShootiumLauncherWeapon::MakeShot()
         Projectile->FinishSpawning(SpawnTransform);
     }
     DecreaseAmmo();
+
+    SpawnMuzzleFX();
 }

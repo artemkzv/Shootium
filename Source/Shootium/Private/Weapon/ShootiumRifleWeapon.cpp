@@ -5,6 +5,7 @@
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
 #include "Weapon/Components/ShootiumWeaponFXComponent.h"
+#include "NiagaraComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogRifleWeapon, All, All);
 
@@ -23,6 +24,7 @@ void AShootiumRifleWeapon::BeginPlay()
 
 void AShootiumRifleWeapon::StartFire()
 {
+    InitMuzzleFX();
     if (!GetWorld() || IsAmmoEmpty())
     {
         StopFire();
@@ -35,6 +37,7 @@ void AShootiumRifleWeapon::StartFire()
 void AShootiumRifleWeapon::StopFire()
 {
     GetWorldTimerManager().ClearTimer(ShotTimerHandle);
+    SetMuzzleFXVisibility(false);
 }
 
 
@@ -95,4 +98,22 @@ void AShootiumRifleWeapon::MakeDamage(const FHitResult& HitResult)
         return;
 
     DamagedActor->TakeDamage(DamageAmount, FDamageEvent(), GetPlayerController(), this);
+}
+
+void AShootiumRifleWeapon::InitMuzzleFX() 
+{
+    if (!MuzzleFXComponent)
+    {
+        MuzzleFXComponent = SpawnMuzzleFX();
+    }
+    SetMuzzleFXVisibility(true);
+}
+
+void AShootiumRifleWeapon::SetMuzzleFXVisibility(bool Visible) 
+{
+    if (MuzzleFXComponent)
+    {
+        MuzzleFXComponent->SetPaused(!Visible);
+        MuzzleFXComponent->SetVisibility(Visible, true);
+    }
 }

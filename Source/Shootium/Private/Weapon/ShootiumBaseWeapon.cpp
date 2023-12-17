@@ -7,6 +7,8 @@
 #include "DrawDebugHelpers.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/Controller.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogBaseWeapon, All, All);
 
@@ -151,6 +153,8 @@ void AShootiumBaseWeapon::LogAmmo()
     UE_LOG(LogBaseWeapon, Display, TEXT("%s"), *AmmoInfo);
 }
 
+
+
 bool AShootiumBaseWeapon::IsAmmoFull() const
 {
     return CurrentAmmo.Clips == DefaultAmmo.Clips && CurrentAmmo.Bullets == DefaultAmmo.Bullets;
@@ -190,4 +194,15 @@ bool AShootiumBaseWeapon::TryToAddAmmo(int32 ClipsAmount)
     }
 
     return true;
+}
+
+UNiagaraComponent* AShootiumBaseWeapon::SpawnMuzzleFX()
+{
+    return UNiagaraFunctionLibrary::SpawnSystemAttached(MuzzleFX, //
+        WeaponMesh,                                        //
+        MuzzleSocketName,                                  //
+        FVector::ZeroVector,                               //
+        FRotator::ZeroRotator,                             //
+        EAttachLocation::SnapToTarget,                     //
+        true);
 }

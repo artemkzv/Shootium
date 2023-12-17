@@ -7,6 +7,7 @@
 #include "ShootiumRifleWeapon.generated.h"
 
 class UShootiumWeaponFXComponent;
+class UNiagaraComponent;
 
 UCLASS()
 class SHOOTIUM_API AShootiumRifleWeapon : public AShootiumBaseWeapon
@@ -39,5 +40,10 @@ protected:
 private:
     FTimerHandle ShotTimerHandle;
 
+    UPROPERTY()
+    UNiagaraComponent* MuzzleFXComponent;
+
     void MakeDamage(const FHitResult& HitResult);
+    void InitMuzzleFX();
+    void SetMuzzleFXVisibility(bool Visible);
 };
