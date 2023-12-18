@@ -29,7 +29,8 @@ public class Shootium : ModuleRules
             "Shootium/Public/Weapon/Components",
             "Shootium/Public/UI",
             "Shootium/Public/Animations",
-            "Shootium/Public/Pickups"
+            "Shootium/Public/Pickups",
+			"Shootium/Public/AI"
         });
 
 		// Uncomment if you are using Slate UI
