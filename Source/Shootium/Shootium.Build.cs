@@ -15,7 +15,9 @@ public class Shootium : ModuleRules
 			"Engine",
 			"InputCore",
 			"Niagara",
-			"PhysicsCore"
+			"PhysicsCore",
+			"GameplayTasks",
+			"NavigationSystem"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
@@ -30,7 +32,8 @@ public class Shootium : ModuleRules
             "Shootium/Public/UI",
             "Shootium/Public/Animations",
             "Shootium/Public/Pickups",
-			"Shootium/Public/AI"
+			"Shootium/Public/AI",
+            "Shootium/Public/AI/Tasks"
         });
 
 		// Uncomment if you are using Slate UI
