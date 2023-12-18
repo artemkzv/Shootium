@@ -6,9 +6,8 @@
 #include "Player/ShootiumBaseCharacter.h"
 #include "ShootiumAICharacter.generated.h"
 
-/**
- * 
- */
+class UBehaviorTree;
+
 UCLASS()
 class SHOOTIUM_API AShootiumAICharacter : public AShootiumBaseCharacter
 {
@@ -16,4 +15,7 @@ class SHOOTIUM_API AShootiumAICharacter : public AShootiumBaseCharacter
 	
 public:
     AShootiumAICharacter(const FObjectInitializer& ObjInit);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
+    UBehaviorTree* BehaviorTreeAsset;
 };
