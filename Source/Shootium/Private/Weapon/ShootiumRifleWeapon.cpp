@@ -6,6 +6,7 @@
 #include "DrawDebugHelpers.h"
 #include "Weapon/Components/ShootiumWeaponFXComponent.h"
 #include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogRifleWeapon, All, All);
 
@@ -60,8 +61,10 @@ void AShootiumRifleWeapon::MakeShot()
     FHitResult HitResult;
     MakeHit(HitResult, TraceStart, TraceEnd);
 
+    FVector TraceFXEnd = TraceEnd;
     if (HitResult.bBlockingHit)
     {
+        TraceFXEnd = HitResult.ImpactPoint;
         MakeDamage(HitResult);
         //DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0, 3.0f);
         //DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.0f, 24, FColor::Green, false, 5.0f);
@@ -69,11 +72,12 @@ void AShootiumRifleWeapon::MakeShot()
 
         UE_LOG(LogRifleWeapon, Display, TEXT("Hit the bone: %s"), *HitResult.BoneName.ToString());
     }
-    else
+    /* else
     {
         DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::White, false, 3.0f, 0, 3.0f);
-    }
+    } */
 
+    SpawnTraceFX(GetMuzzleWorldLocation(), TraceFXEnd);
     DecreaseAmmo();
 }
 
@@ -115,5 +119,14 @@ void AShootiumRifleWeapon::SetMuzzleFXVisibility(bool Visible)
     {
         MuzzleFXComponent->SetPaused(!Visible);
         MuzzleFXComponent->SetVisibility(Visible, true);
+    }
+}
+
+void AShootiumRifleWeapon::SpawnTraceFX(const FVector& TraceStart, const FVector& TraceEnd) 
+{
+    const auto TraceFXComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), TraceFX, TraceStart);
+    if (TraceFXComponent)
+    {
+        TraceFXComponent->SetNiagaraVariableVec3(TraceTargetName, TraceEnd);
     }
 }
