@@ -59,11 +59,24 @@ APlayerController* AShootiumBaseWeapon::GetPlayerController() const
 
 bool AShootiumBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const
 {
-    const auto Controller = GetPlayerController();
-    if (!Controller) return false;
+    const auto ShootiumCharacter = Cast<ACharacter>(GetOwner());
+    if (!ShootiumCharacter)
+        return false;
 
+    if (ShootiumCharacter->IsPlayerControlled())
+    {
+        const auto Controller = GetPlayerController();
+        if (!Controller)
+            return false;
 
-    Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
+        Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
+    }
+    else
+    {
+        ViewLocation = GetMuzzleWorldLocation();
+        ViewRotation = WeaponMesh->GetSocketRotation(MuzzleSocketName);
+    }
+    
     return true;
 }
 
