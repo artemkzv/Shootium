@@ -3,8 +3,15 @@
 
 #include "AI/ShootiumAIController.h"
 #include "AI/ShootiumAICharacter.h"
+#include "Components/ShootiumAIPerceptionComponent.h"
 
-void AShootiumAIController::OnPossess(APawn* InPawn) 
+AShootiumAIController::AShootiumAIController() 
+{
+    ShootiumAIPerceptionComponent = CreateDefaultSubobject<UShootiumAIPerceptionComponent>("ShootiumPerceptionComponent");
+    SetPerceptionComponent(*ShootiumAIPerceptionComponent);
+}
+
+void AShootiumAIController::OnPossess(APawn* InPawn)
 {
     Super::OnPossess(InPawn);
 
@@ -13,4 +20,12 @@ void AShootiumAIController::OnPossess(APawn* InPawn)
     {
         RunBehaviorTree(ShootiumCharacter->BehaviorTreeAsset);
     }
+}
+
+void AShootiumAIController::Tick(float DeltaTime) 
+{
+    Super::Tick(DeltaTime);
+    
+    const auto AimActor = ShootiumAIPerceptionComponent->GetClosestEnemy();
+    SetFocus(AimActor);
 }

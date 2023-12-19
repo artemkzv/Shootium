@@ -4,7 +4,7 @@ class ShootiumUtils
 {
 public:
 	template <typename T> 
-	static T* GetShootiumPlayerComponent(APawn* PlayerPawn)
+	static T* GetShootiumPlayerComponent(AActor* PlayerPawn)
     {
         if (!PlayerPawn) return nullptr;
 
