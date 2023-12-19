@@ -33,7 +33,8 @@ public class Shootium : ModuleRules
             "Shootium/Public/Animations",
             "Shootium/Public/Pickups",
 			"Shootium/Public/AI",
-            "Shootium/Public/AI/Tasks"
+            "Shootium/Public/AI/Tasks",
+            "Shootium/Public/AI/Services"
         });
 
 		// Uncomment if you are using Slate UI
