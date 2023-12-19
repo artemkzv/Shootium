@@ -17,9 +17,9 @@ class SHOOTIUM_API UShootiumWeaponComponent : public UActorComponent
 public:
     UShootiumWeaponComponent();
 
-    void StartFire();
+    virtual void StartFire();
     void StopFire();
-    void NextWeapon();
+    virtual void NextWeapon();
     void Reload();
 
     bool GetCurrentWeaponUIData(FWeaponUIData& UIData) const;
@@ -40,33 +40,35 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
     UAnimMontage* EquipAnimMontage;
 
-    virtual void BeginPlay() override;
-    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-private:
     UPROPERTY()
     AShootiumBaseWeapon* CurrentWeapon = nullptr;
 
     UPROPERTY()
     TArray<AShootiumBaseWeapon*> Weapons;
 
+    int32 CurrentWeaponIndex = 0;
+
+    virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+    bool CanFire();
+    bool CanEquip();
+    void EquipWeapon(int32 WeaponIndex);
+
+private:
     UPROPERTY()
     UAnimMontage* CurrentReloadAnimMontage = nullptr;
 
-    int32 CurrentWeaponIndex = 0;
     bool EquipAnimProgress = false;
     bool ReloadAnimProgress = false;
 
     void SpawnWeapons();
     void AttachWeaponToSocket(AShootiumBaseWeapon* Weapon, USceneComponent* SceneComponent, const FName& SocketName);
-    void EquipWeapon(int32 WeaponIndex);
     void PlayAnimMontage(UAnimMontage* Animation);
     void InitAnimations();
     void OnEquipFinished(USkeletalMeshComponent* MeshComp);
     void OnReloadFinished(USkeletalMeshComponent* MeshComp);
 
-    bool CanFire();
-    bool CanEquip();
     bool CanReload();
 
     void OnEmptyClip(AShootiumBaseWeapon* AmmoEmptyWeapon);

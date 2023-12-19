@@ -4,8 +4,10 @@
 #include "AI/ShootiumAICharacter.h"
 #include "AI/ShootiumAIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/ShootiumAIWeaponComponent.h"
 
-AShootiumAICharacter::AShootiumAICharacter(const FObjectInitializer& ObjInit) : Super(ObjInit)
+AShootiumAICharacter::AShootiumAICharacter(const FObjectInitializer& ObjInit)
+    : Super(ObjInit.SetDefaultSubobjectClass<UShootiumAIWeaponComponent>("WeaponComponent"))
 {
     AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
     AIControllerClass = AShootiumAIController::StaticClass();
