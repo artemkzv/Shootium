@@ -34,7 +34,8 @@ public class Shootium : ModuleRules
             "Shootium/Public/Pickups",
 			"Shootium/Public/AI",
             "Shootium/Public/AI/Tasks",
-            "Shootium/Public/AI/Services"
+            "Shootium/Public/AI/Services",
+            "Shootium/Public/AI/EQS"
         });
 
 		// Uncomment if you are using Slate UI
