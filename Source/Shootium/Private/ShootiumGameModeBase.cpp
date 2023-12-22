@@ -7,6 +7,8 @@
 #include "UI/ShootiumGameHUD.h"
 #include "AIController.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogShootiumGameModeBase, All, All);
+
 AShootiumGameModeBase::AShootiumGameModeBase()
 {
     DefaultPawnClass = AShootiumBaseCharacter::StaticClass();
@@ -19,6 +21,9 @@ void AShootiumGameModeBase::StartPlay()
     Super::StartPlay();
 
     SpawnBots();
+
+    CurrentRound = 1;
+    StartRound();
 }
 
 UClass* AShootiumGameModeBase::GetDefaultPawnClassForController_Implementation(AController* InController)
@@ -42,5 +47,30 @@ void AShootiumGameModeBase::SpawnBots()
 
         const auto ShootiumAIController = GetWorld()->SpawnActor<AAIController>(AIControllerClass, SpawnInfo);
         RestartPlayer(ShootiumAIController);
+    }
+}
+
+void AShootiumGameModeBase::StartRound() 
+{
+    RoundCountDown = GameData.RoundTime;
+    GetWorldTimerManager().SetTimer(GameRoundTimerHandle, this, &AShootiumGameModeBase::GameTimerUpdate, 1.0f, true);
+}
+
+void AShootiumGameModeBase::GameTimerUpdate() 
+{
+    UE_LOG(LogShootiumGameModeBase, Display, TEXT("Time: %i / Round: %i/%i"), RoundCountDown, CurrentRound,GameData.RoundsNum);
+    if (--RoundCountDown == 0)
+    {
+        GetWorldTimerManager().ClearTimer(GameRoundTimerHandle);
+
+        if (CurrentRound + 1 <= GameData.RoundsNum)
+        {
+            ++CurrentRound;
+            StartRound();
+        }
+        else
+        {
+            UE_LOG(LogShootiumGameModeBase, Display, TEXT("======== Game Over ========"));
+        }
     }
 }
