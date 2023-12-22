@@ -54,7 +54,6 @@ void AShootiumBasePickup::PickupWasTaken()
         GetRootComponent()->SetVisibility(false, true);
     }
 
-    FTimerHandle RespawnTimerHandle;
     GetWorldTimerManager().SetTimer(RespawnTimerHandle, this, &AShootiumBasePickup::Respawn, RespawnTime);
 }
 
@@ -79,4 +78,9 @@ void AShootiumBasePickup::GenerateRotationYaw()
 {
     const auto Direction = FMath::RandBool() ? 1.0f : -1.0f;
     RotationYaw = FMath::RandRange(1.0f, 2.0f) * Direction;
+}
+
+bool AShootiumBasePickup::CouldBeTaken() const
+{
+    return GetWorldTimerManager().IsTimerActive(RespawnTimerHandle);
 }
