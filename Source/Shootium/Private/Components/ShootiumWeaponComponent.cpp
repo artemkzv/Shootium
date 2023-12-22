@@ -231,6 +231,18 @@ bool UShootiumWeaponComponent::TryToAddAmmo(TSubclassOf<AShootiumBaseWeapon> Wea
     return false;
 }
 
+bool UShootiumWeaponComponent::NeedAmmo(TSubclassOf<AShootiumBaseWeapon> WeaponType)
+{
+    for (const auto Weapon : Weapons)
+    {
+        if (Weapon && Weapon->IsA(WeaponType))
+        {
+            return !Weapon->IsAmmoFull();
+        }
+    }
+    return false;
+}
+
 void UShootiumWeaponComponent::OnEmptyClip(AShootiumBaseWeapon* AmmoEmptyWeapon)
 {
     if (!AmmoEmptyWeapon) return;
