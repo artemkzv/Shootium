@@ -166,7 +166,11 @@ void AShootiumBaseCharacter::OnGroundLanded(const FHitResult& Hit)
     
 }
 
+void AShootiumBaseCharacter::SetPlayerColor(const FLinearColor& Color) 
+{
+    const auto MaterialInst = GetMesh()->CreateAndSetMaterialInstanceDynamic(0);
+    if (!MaterialInst)
+        return;
 
-
-
-
+    MaterialInst->SetVectorParameterValue(MaterialColorName, Color);
+}
