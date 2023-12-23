@@ -8,6 +8,7 @@
 #include "Engine/World.h"
 #include "TimerManager.h"
 #include "Camera/CameraShakeBase.h"
+#include "ShootiumGameModeBase.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogHealthComponent, All, All);
 
@@ -46,6 +47,7 @@ void UShootiumHealthComponent::OnTakeAnyDamage(
 
 	if (IsDead())
 	{
+        Killed(InstigatedBy);
         OnDeath.Broadcast();
 	}
 	else if (AutoHeal)
@@ -102,4 +104,19 @@ void UShootiumHealthComponent::PlayCameraShake()
     if (!Controller || !Controller->PlayerCameraManager) return;
 
 	Controller->PlayerCameraManager->StartCameraShake(CameraShake);
+}
+
+void UShootiumHealthComponent::Killed(AController* KillerController) 
+{
+    if (!GetWorld())
+        return;
+
+    const auto GameMode = Cast<AShootiumGameModeBase>(GetWorld()->GetAuthGameMode());
+    if (!GameMode)
+        return;
+
+    const auto Player = Cast<APawn>(GetOwner());
+    const auto VictimController = Player ? Player->Controller : nullptr;
+
+    GameMode->Killed(KillerController, VictimController);
 }

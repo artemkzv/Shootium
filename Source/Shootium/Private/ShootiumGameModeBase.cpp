@@ -1,6 +1,5 @@
 // Shootium Game. All Rights Reserved.
 
-
 #include "ShootiumGameModeBase.h"
 #include "Player/ShootiumBaseCharacter.h"
 #include "Player/ShootiumPlayerController.h"
@@ -18,7 +17,7 @@ AShootiumGameModeBase::AShootiumGameModeBase()
     PlayerStateClass = AShootiumPlayerState::StaticClass();
 }
 
-void AShootiumGameModeBase::StartPlay() 
+void AShootiumGameModeBase::StartPlay()
 {
     Super::StartPlay();
 
@@ -38,7 +37,7 @@ UClass* AShootiumGameModeBase::GetDefaultPawnClassForController_Implementation(A
     return Super::GetDefaultPawnClassForController_Implementation(InController);
 }
 
-void AShootiumGameModeBase::SpawnBots() 
+void AShootiumGameModeBase::SpawnBots()
 {
     if (!GetWorld())
         return;
@@ -53,15 +52,15 @@ void AShootiumGameModeBase::SpawnBots()
     }
 }
 
-void AShootiumGameModeBase::StartRound() 
+void AShootiumGameModeBase::StartRound()
 {
     RoundCountDown = GameData.RoundTime;
     GetWorldTimerManager().SetTimer(GameRoundTimerHandle, this, &AShootiumGameModeBase::GameTimerUpdate, 1.0f, true);
 }
 
-void AShootiumGameModeBase::GameTimerUpdate() 
+void AShootiumGameModeBase::GameTimerUpdate()
 {
-    UE_LOG(LogShootiumGameModeBase, Display, TEXT("Time: %i / Round: %i/%i"), RoundCountDown, CurrentRound,GameData.RoundsNum);
+    UE_LOG(LogShootiumGameModeBase, Display, TEXT("Time: %i / Round: %i/%i"), RoundCountDown, CurrentRound, GameData.RoundsNum);
     if (--RoundCountDown == 0)
     {
         GetWorldTimerManager().ClearTimer(GameRoundTimerHandle);
@@ -75,11 +74,12 @@ void AShootiumGameModeBase::GameTimerUpdate()
         else
         {
             UE_LOG(LogShootiumGameModeBase, Display, TEXT("======== Game Over ========"));
+            LogPlayerInfo();
         }
     }
 }
 
-void AShootiumGameModeBase::ResetPlayers() 
+void AShootiumGameModeBase::ResetPlayers()
 {
     if (!GetWorld())
         return;
@@ -90,7 +90,7 @@ void AShootiumGameModeBase::ResetPlayers()
     }
 }
 
-void AShootiumGameModeBase::ResetOnePlayer(AController* Controller) 
+void AShootiumGameModeBase::ResetOnePlayer(AController* Controller)
 {
     if (Controller && Controller->GetPawn())
     {
@@ -100,7 +100,7 @@ void AShootiumGameModeBase::ResetOnePlayer(AController* Controller)
     SetPlayerColor(Controller);
 }
 
-void AShootiumGameModeBase::CreateTeamsInfo() 
+void AShootiumGameModeBase::CreateTeamsInfo()
 {
     if (!GetWorld())
         return;
@@ -134,7 +134,7 @@ FLinearColor AShootiumGameModeBase::DetermineColorByTeamID(int32 TeamID) const
     return GameData.DefaultTeamColor;
 }
 
-void AShootiumGameModeBase::SetPlayerColor(AController* Controller) 
+void AShootiumGameModeBase::SetPlayerColor(AController* Controller)
 {
     if (!Controller)
         return;
@@ -148,4 +148,39 @@ void AShootiumGameModeBase::SetPlayerColor(AController* Controller)
         return;
 
     Character->SetPlayerColor(PlayerState->GetTeamColor());
+}
+
+void AShootiumGameModeBase::Killed(AController* KillerController, AController* VictimController)
+{
+    const auto KillerPlayerState = KillerController ? Cast<AShootiumPlayerState>(KillerController->PlayerState) : nullptr;
+    const auto VictimPlayerState = VictimController ? Cast<AShootiumPlayerState>(VictimController->PlayerState) : nullptr;
+
+    if (KillerPlayerState)
+    {
+        KillerPlayerState->AddKill();
+    }
+
+    if (VictimPlayerState)
+    {
+        VictimPlayerState->AddDeath();
+    }
+}
+
+void AShootiumGameModeBase::LogPlayerInfo()
+{
+    if (!GetWorld())
+        return;
+
+    for (auto It = GetWorld()->GetControllerIterator(); It; ++It)
+    {
+        const auto Controller = It->Get();
+        if (!Controller)
+            continue;
+
+        const auto PlayerState = Cast<AShootiumPlayerState>(Controller->PlayerState);
+        if (!PlayerState)
+            continue;
+
+        PlayerState->LogInfo();
+    }
 }

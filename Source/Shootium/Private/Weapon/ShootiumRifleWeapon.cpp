@@ -101,7 +101,7 @@ void AShootiumRifleWeapon::MakeDamage(const FHitResult& HitResult)
     if (!DamagedActor)
         return;
 
-    DamagedActor->TakeDamage(DamageAmount, FDamageEvent(), GetPlayerController(), this);
+    DamagedActor->TakeDamage(DamageAmount, FDamageEvent(), GetController(), this);
 }
 
 void AShootiumRifleWeapon::InitMuzzleFX() 
@@ -129,4 +129,10 @@ void AShootiumRifleWeapon::SpawnTraceFX(const FVector& TraceStart, const FVector
     {
         TraceFXComponent->SetNiagaraVariableVec3(TraceTargetName, TraceEnd);
     }
+}
+
+AController* AShootiumRifleWeapon::GetController() const
+{
+    const auto Pawn = Cast<APawn>(GetOwner()); //
+    return Pawn ? Pawn->GetController() : nullptr; // задел на будущее чтобы узнать, кто кого уничтожил и сколько
 }
