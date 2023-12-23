@@ -10,6 +10,8 @@ AShootiumAIController::AShootiumAIController()
 {
     ShootiumAIPerceptionComponent = CreateDefaultSubobject<UShootiumAIPerceptionComponent>("ShootiumPerceptionComponent");
     SetPerceptionComponent(*ShootiumAIPerceptionComponent);
+
+    bWantsPlayerState = true;
 }
 
 void AShootiumAIController::OnPossess(APawn* InPawn)

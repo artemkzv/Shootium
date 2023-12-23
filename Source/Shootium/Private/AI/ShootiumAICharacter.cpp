@@ -10,7 +10,7 @@
 AShootiumAICharacter::AShootiumAICharacter(const FObjectInitializer& ObjInit)
     : Super(ObjInit.SetDefaultSubobjectClass<UShootiumAIWeaponComponent>("WeaponComponent"))
 {
-    AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+    AutoPossessAI = EAutoPossessAI::Disabled;
     AIControllerClass = AShootiumAIController::StaticClass();
 
     bUseControllerRotationYaw = false;

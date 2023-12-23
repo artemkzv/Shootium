@@ -66,6 +66,7 @@ void AShootiumGameModeBase::GameTimerUpdate()
         if (CurrentRound + 1 <= GameData.RoundsNum)
         {
             ++CurrentRound;
+            ResetPlayers();
             StartRound();
         }
         else
@@ -73,4 +74,24 @@ void AShootiumGameModeBase::GameTimerUpdate()
             UE_LOG(LogShootiumGameModeBase, Display, TEXT("======== Game Over ========"));
         }
     }
+}
+
+void AShootiumGameModeBase::ResetPlayers() 
+{
+    if (!GetWorld())
+        return;
+
+    for (auto It = GetWorld()->GetControllerIterator(); It; ++It)
+    {
+        ResetOnePlayer(It->GetEvenIfUnreachable());
+    }
+}
+
+void AShootiumGameModeBase::ResetOnePlayer(AController* Controller) 
+{
+    if (Controller && Controller->GetPawn())
+    {
+        Controller->GetPawn()->Reset();
+    }
+    RestartPlayer(Controller);
 }
