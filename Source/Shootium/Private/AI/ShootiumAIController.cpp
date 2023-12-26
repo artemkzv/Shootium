@@ -4,12 +4,15 @@
 #include "AI/ShootiumAIController.h"
 #include "AI/ShootiumAICharacter.h"
 #include "Components/ShootiumAIPerceptionComponent.h"
+#include "Components/ShootiumRespawnComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 AShootiumAIController::AShootiumAIController() 
 {
     ShootiumAIPerceptionComponent = CreateDefaultSubobject<UShootiumAIPerceptionComponent>("ShootiumPerceptionComponent");
     SetPerceptionComponent(*ShootiumAIPerceptionComponent);
+
+    RespawnComponent = CreateDefaultSubobject<UShootiumRespawnComponent>("RespawnComponent");
 
     bWantsPlayerState = true;
 }

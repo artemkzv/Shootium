@@ -7,6 +7,7 @@
 #include "ShootiumAIController.generated.h"
 
 class UShootiumAIPerceptionComponent;
+class UShootiumRespawnComponent;
 
 UCLASS()
 class SHOOTIUM_API AShootiumAIController : public AAIController
@@ -19,6 +20,9 @@ public:
 protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     UShootiumAIPerceptionComponent* ShootiumAIPerceptionComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+    UShootiumRespawnComponent* RespawnComponent;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
     FName FocusOnKeyName = "EnemyActor";

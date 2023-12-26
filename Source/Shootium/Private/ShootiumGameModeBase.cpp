@@ -6,8 +6,12 @@
 #include "UI/ShootiumGameHUD.h"
 #include "AIController.h"
 #include "Player/ShootiumPlayerState.h"
+#include "ShootiumUtils.h"
+#include "Components/ShootiumRespawnComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogShootiumGameModeBase, All, All);
+
+constexpr static int32 MinRoundSecondsForRespawn = 5;
 
 AShootiumGameModeBase::AShootiumGameModeBase()
 {
@@ -164,7 +168,10 @@ void AShootiumGameModeBase::Killed(AController* KillerController, AController* V
     {
         VictimPlayerState->AddDeath();
     }
+
+    StartRespawn(VictimController);
 }
+
 
 void AShootiumGameModeBase::LogPlayerInfo()
 {
@@ -183,4 +190,23 @@ void AShootiumGameModeBase::LogPlayerInfo()
 
         PlayerState->LogInfo();
     }
+}
+
+
+void AShootiumGameModeBase::StartRespawn(AController* Controller)
+{
+    const auto RespawnAvailable = RoundCountDown > MinRoundSecondsForRespawn + GameData.RespawnTime;
+    if (!RespawnAvailable)
+        return;
+
+    const auto RespawnComponent = ShootiumUtils::GetShootiumPlayerComponent<UShootiumRespawnComponent>(Controller);
+    if (!RespawnComponent)
+        return;
+
+    RespawnComponent->Respawn(GameData.RespawnTime);
+}
+
+void AShootiumGameModeBase::RespawnRequest(AController* Controller) 
+{
+    ResetOnePlayer(Controller);
 }
