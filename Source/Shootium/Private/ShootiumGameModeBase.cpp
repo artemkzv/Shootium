@@ -8,6 +8,7 @@
 #include "Player/ShootiumPlayerState.h"
 #include "ShootiumUtils.h"
 #include "Components/ShootiumRespawnComponent.h"
+#include "EngineUtils.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogShootiumGameModeBase, All, All);
 
@@ -77,8 +78,7 @@ void AShootiumGameModeBase::GameTimerUpdate()
         }
         else
         {
-            UE_LOG(LogShootiumGameModeBase, Display, TEXT("======== Game Over ========"));
-            LogPlayerInfo();
+            GameOver();
         }
     }
 }
@@ -206,7 +206,24 @@ void AShootiumGameModeBase::StartRespawn(AController* Controller)
     RespawnComponent->Respawn(GameData.RespawnTime);
 }
 
+
+
 void AShootiumGameModeBase::RespawnRequest(AController* Controller) 
 {
     ResetOnePlayer(Controller);
+}
+
+void AShootiumGameModeBase::GameOver() 
+{
+    UE_LOG(LogShootiumGameModeBase, Display, TEXT("======== Game Over ========"));
+    LogPlayerInfo();
+
+    for (auto Pawn : TActorRange<APawn>(GetWorld()))
+    {
+        if (Pawn)
+        {
+            Pawn->TurnOff();
+            Pawn->DisableInput(nullptr);
+        }
+    }
 }
