@@ -8,3 +8,5 @@ AShootiumPlayerController::AShootiumPlayerController()
 {
     RespawnComponent = CreateDefaultSubobject<UShootiumRespawnComponent>("RespawnComponent");
 }
+
+

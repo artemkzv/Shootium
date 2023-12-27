@@ -19,4 +19,5 @@ public:
 protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     UShootiumRespawnComponent* RespawnComponent;
+
 };

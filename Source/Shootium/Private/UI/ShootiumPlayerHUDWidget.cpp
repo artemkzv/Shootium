@@ -8,11 +8,12 @@
 
 bool UShootiumPlayerHUDWidget::Initialize()
 {
-    const auto HealthComponent = ShootiumUtils::GetShootiumPlayerComponent<UShootiumHealthComponent>(GetOwningPlayerPawn());
-    if (HealthComponent)
+    if (GetOwningPlayer())
     {
-        HealthComponent->OnHealthChanged.AddUObject(this, &UShootiumPlayerHUDWidget::OnHealthChanged);
+        GetOwningPlayer()->GetOnNewPawnNotifier().AddUObject(this, &UShootiumPlayerHUDWidget::OnNewPawn);
+        OnNewPawn(GetOwningPlayerPawn());
     }
+
     return Super::Initialize();
 }
 
@@ -21,6 +22,15 @@ void UShootiumPlayerHUDWidget::OnHealthChanged(float Health, float HealthDelta)
     if (HealthDelta < 0.0f)
     {
         OnTakeDamage();
+    }
+}
+
+void UShootiumPlayerHUDWidget::OnNewPawn(APawn* NewPawn) 
+{
+    const auto HealthComponent = ShootiumUtils::GetShootiumPlayerComponent<UShootiumHealthComponent>(NewPawn);
+    if (HealthComponent)
+    {
+        HealthComponent->OnHealthChanged.AddUObject(this, &UShootiumPlayerHUDWidget::OnHealthChanged);
     }
 }
 
