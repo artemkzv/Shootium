@@ -17,6 +17,8 @@ void UShootiumRespawnComponent::Respawn(int32 RespawnTime)
     GetWorld()->GetTimerManager().SetTimer(RespawnTimerHandle, this, &UShootiumRespawnComponent::RespawnTimerUpdate, 1.0f, true);
 }
 
+
+
 void UShootiumRespawnComponent::RespawnTimerUpdate() 
 {
     if (--RespawnCountDown == 0)
@@ -31,4 +33,9 @@ void UShootiumRespawnComponent::RespawnTimerUpdate()
 
         GameMode->RespawnRequest(Cast<AController>(GetOwner()));
     }
+}
+
+bool UShootiumRespawnComponent::IsRespawnInProgress() const
+{
+    return GetWorld() && GetWorld()->GetTimerManager().IsTimerActive(RespawnTimerHandle);
 }
