@@ -2,9 +2,7 @@
 
 
 #include "Player/ShootiumBaseCharacter.h"
-#include "Camera/CameraComponent.h"
-#include "Components/InputComponent.h"
-#include "GameFramework/SpringArmComponent.h"
+
 #include "Components/ShootCharacterMovementComponent.h"
 #include "Components/ShootiumHealthComponent.h"
 #include "Components/TextRenderComponent.h"
@@ -22,19 +20,11 @@ AShootiumBaseCharacter::AShootiumBaseCharacter(const FObjectInitializer& ObjInit
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-    SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
-    SpringArmComponent->SetupAttachment(GetRootComponent());
-    SpringArmComponent->bUsePawnControlRotation = true;
-    SpringArmComponent->SocketOffset = FVector(0.0f, 100.0f, 80.0f);
-
-	CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
-    CameraComponent->SetupAttachment(SpringArmComponent);
-
     HealthComponent = CreateDefaultSubobject<UShootiumHealthComponent>("HealthComponent");
 
-    HealthTextComponent = CreateDefaultSubobject<UTextRenderComponent>("HealthTextComponent");
-    HealthTextComponent->SetupAttachment(GetRootComponent());
-    HealthTextComponent->SetOwnerNoSee(true);
+    // HealthTextComponent = CreateDefaultSubobject<UTextRenderComponent>("HealthTextComponent");
+    // HealthTextComponent->SetupAttachment(GetRootComponent());
+    // HealthTextComponent->SetOwnerNoSee(true);
 
     WeaponComponent = CreateDefaultSubobject<UShootiumWeaponComponent>("WeaponComponent");
 }
@@ -45,7 +35,7 @@ void AShootiumBaseCharacter::BeginPlay()
 	Super::BeginPlay();
 
     check(HealthComponent);
-    check(HealthTextComponent);
+    // check(HealthTextComponent);
     check(GetCharacterMovement());
     check(GetMesh());
 
@@ -60,58 +50,12 @@ void AShootiumBaseCharacter::BeginPlay()
 // Called every frame
 void AShootiumBaseCharacter::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-
-    
-
-}
-
-// Called to bind functionality to input
-void AShootiumBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-    check(PlayerInputComponent);
-    check(WeaponComponent);
-
-	PlayerInputComponent->BindAxis("MoveForward", this, &AShootiumBaseCharacter::MoveForward);
-    PlayerInputComponent->BindAxis("MoveRight", this, &AShootiumBaseCharacter::MoveRight);
-    PlayerInputComponent->BindAxis("LookUp", this, &AShootiumBaseCharacter::AddControllerPitchInput);
-    PlayerInputComponent->BindAxis("TurnAround", this, &AShootiumBaseCharacter::AddControllerYawInput);
-    PlayerInputComponent->BindAction("Jump",IE_Pressed, this, &AShootiumBaseCharacter::Jump);
-    PlayerInputComponent->BindAction("Run", IE_Pressed, this, &AShootiumBaseCharacter::OnStartRunning);
-    PlayerInputComponent->BindAction("Run", IE_Released, this, &AShootiumBaseCharacter::OnStopRunning);
-    PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &UShootiumWeaponComponent::StartFire);
-    PlayerInputComponent->BindAction("Fire", IE_Released, WeaponComponent, &UShootiumWeaponComponent::StopFire);
-    PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, WeaponComponent, &UShootiumWeaponComponent::NextWeapon);
-    PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &UShootiumWeaponComponent::Reload);
-}
-
-void AShootiumBaseCharacter::MoveForward(float Amount) 
-{
-    IsMovingForward = Amount > 0.0f;
-    if (Amount == 0.0f) return;
-    AddMovementInput(GetActorForwardVector(), Amount);
-}
-
-void AShootiumBaseCharacter::MoveRight(float Amount) 
-{
-    if (Amount == 0.0f) return;
-    AddMovementInput(GetActorRightVector(), Amount);
-}
-
-void AShootiumBaseCharacter::OnStartRunning() 
-{
-    WantsToRun = true;
-}
-
-void AShootiumBaseCharacter::OnStopRunning() 
-{
-    WantsToRun = false;
+    Super::Tick(DeltaTime);
 }
 
 bool AShootiumBaseCharacter::IsRunning() const
 {
-    return WantsToRun && IsMovingForward && !GetVelocity().IsZero();
+    return false;
 }
 
 float AShootiumBaseCharacter::GetMovementDirection() const
@@ -134,10 +78,6 @@ void AShootiumBaseCharacter::OnDeath()
 
     SetLifeSpan(LifeSpanOnDeath);
 
-    if (Controller)
-    {
-        Controller->ChangeState(NAME_Spectating);
-    }
     GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
     WeaponComponent->StopFire();
 
@@ -147,7 +87,7 @@ void AShootiumBaseCharacter::OnDeath()
 
 void AShootiumBaseCharacter::OnHealthChanged(float Health, float HealthDelta)
 {
-    HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), Health)));
+    // HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), Health)));
 }
 
 void AShootiumBaseCharacter::OnGroundLanded(const FHitResult& Hit) 
